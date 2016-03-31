@@ -1,0 +1,11 @@
+
+node_modules
+coverage
+storage.sqlite3
+*.log
+_site
+data
+.DS_Store
+app/public/
+
+
