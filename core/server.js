@@ -1,9 +1,20 @@
 'use strict'
 
 let express = require('express')
+  , bodyParser = require('body-parser')
+  , nunjucks = require('nunjucks')
+  , utils = require('./utils.js')
+  , Logger = require('./logger')
+  // , Storage = require('./storage.js')
+  // , Generator = require('./generator')
+  // , ControllerManager = require('./controllermanager')
   ;
 
 function Server(basePath, customConfig) {
+    /* istanbul ignore if */
+    if(!basePath){
+        _err('root path');
+    }
     /* istanbul ignore if */
     if(!customConfig){
         customConfig = require(basePath+"/config.js");
@@ -11,6 +22,12 @@ function Server(basePath, customConfig) {
     this.basePath = basePath;
     this.application = express();
     this.config = customConfig;
+    this.storageFolder = [basePath, this.config.app, this.config.data_folder].join(this.config.sep)
+    this.staticsFolder = [basePath, this.config.app, this.config.statics].join(this.config.sep)
+    this.templatesFolder = [basePath, this.config.app, this.config.templates].join(this.config.sep)
+    // this.storage = new Storage(storageFolder)
+    // this.controller = new ControllerManager(app)
+    // this.generator = new Generator(this, basePath)
 }
 
 Server.prototype.setConfiguration = function Server_setConfiguration(config) {
