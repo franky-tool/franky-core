@@ -112,7 +112,7 @@ describe('As a developer I want to instantiate an intermediary to save informati
       });
     });
     describe('When the developer use the save method with a non existing collection', function () {
-      it('Then will create a collection and save sent data.', function (done) {
+      it('Then will create or load the collection and save sent data.', function (done) {
         storage.save(collection+"_save", user, function(data){
           expect(data.name).to.be.equal(user.name);
           expect(data.password).to.be.equal(user.password);
@@ -146,7 +146,7 @@ describe('As a developer I want to instantiate an intermediary to save informati
       });
     });
     describe('When the developer use the update method with a non existing collection', function () {
-      it('Then will create a collection and save sent data.', function (done) {
+      it('Then will create or load the collection and save sent data.', function (done) {
         let newUser = JSON.parse(JSON.stringify(usersData[0]));
         newUser.name = "Sample User";
         storage.update(collection+"_update", usersData[0], newUser, {upsert:true}, function(status){
@@ -183,6 +183,14 @@ describe('As a developer I want to instantiate an intermediary to save informati
     describe('When the developer use a method remove from storage instance', function () {
       it('Then will remove all saved information.', function (done) {
         storage.remove(collection, function storage_remove_callback(data) {
+          expect(data.length).to.be.equal(3);
+          done();
+        });
+      });
+    });
+    describe('When the developer use a method remove from storage instance with an unexistent collection', function () {
+      it('Then will create or load the collection and try to delete the data.', function (done) {
+        storage.remove(collection+"_remove", usersData[0], function(data){
           expect(data.length).to.be.equal(0);
           done();
         });
