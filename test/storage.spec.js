@@ -183,7 +183,7 @@ describe('As a developer I want to instantiate an intermediary to save informati
     describe('When the developer use a method remove from storage instance', function () {
       it('Then will remove all saved information.', function (done) {
         storage.remove(collection, function storage_remove_callback(data) {
-          expect(data.length).to.be.equal(3);
+          expect(data.length).to.be.equal(0);
           done();
         });
       });
