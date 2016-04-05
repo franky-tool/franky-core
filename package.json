@@ -20,6 +20,7 @@
   "dependencies": {
     "body-parser": "^1.15.0",
     "chalk": "^1.1.3",
+    "diskdb": "^0.1.14",
     "express": "^4.13.4",
     "nunjucks": "^2.4.1"
   }
