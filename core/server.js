@@ -5,9 +5,9 @@ let express = require('express')
   , nunjucks = require('nunjucks')
   , utils = require('./utils.js')
   , Logger = require('./logger')
+  , ControllerManager = require('./controllermanager')
   // , Storage = require('./storage.js')
   // , Generator = require('./generator')
-  // , ControllerManager = require('./controllermanager')
   ;
 
 function Server(basePath, customConfig) {
@@ -25,8 +25,8 @@ function Server(basePath, customConfig) {
     this.storageFolder = [basePath, this.config.app, this.config.data_folder].join(this.config.sep)
     this.staticsFolder = [basePath, this.config.app, this.config.statics].join(this.config.sep)
     this.templatesFolder = [basePath, this.config.app, this.config.templates].join(this.config.sep)
+    this.controller = new ControllerManager(this.application, this.basePath)
     // this.storage = new Storage(storageFolder)
-    // this.controller = new ControllerManager(app)
     // this.generator = new Generator(this, basePath)
 }
 

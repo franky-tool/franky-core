@@ -46,7 +46,6 @@ describe('As a developer I want to instantiate an intermediary to save informati
         }
       ;
     before(function(){
-      //*
       try {
         rmdir(config.database.name);
       } catch (error) {}
@@ -60,7 +59,11 @@ describe('As a developer I want to instantiate an intermediary to save informati
       } catch (error) {
         console.error("Error creating file.");
       }
-      //*/ 
+    });
+    after(function(){
+      try {
+        rmdir(config.database.name);
+      } catch (error) {}
     });
     beforeEach(function() {
       storage = new Storage(config);

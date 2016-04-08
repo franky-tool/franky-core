@@ -1,5 +1,8 @@
 'use strict'
 
+let fs = require('fs')
+  ;
+
 /**
  * Able the developer to launch an exception of type.
  */
@@ -16,6 +19,59 @@ function _err(paramname, complement) {
   }
 }
 
+/**
+ * Return true if folder exists, else false.
+ */
+function folderExists(fp) {
+  try{
+    let stats = fs.lstatSync(fp);
+    /* istanbul ignore else */
+    if (stats.isDirectory()) {
+      return true;
+    }
+  } catch(err){
+    return false;
+  }
+}
+
+/**
+ * Return true if file exists, else false.
+ */
+function fileExists(fp) {
+  try{
+    let stats = fs.lstatSync(fp);
+    /* istanbul ignore else */
+    if (stats.isFile()) {
+      return true;
+    }
+  } catch(err){
+    return false;
+  }
+}
+
+/**
+ * Return the list of files stored in specified folder.
+ */
+function getFilesList(fp) {
+  if(folderExists(fp)){
+    return fs.readdirSync(fp);
+  } else {
+    return [];
+  }
+}
+
+/* istanbul ignore next */
+/**
+ * Return a required module.
+ */
+function requireModule(path) {
+  return require(path);
+}
+
 module.exports = {
-    _err: _err
+    _err: _err,
+    folderExists: folderExists,
+    fileExists: fileExists,
+    getFilesList: getFilesList,
+    requireModule: requireModule
 }
