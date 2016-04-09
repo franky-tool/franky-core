@@ -6,52 +6,63 @@ let express = require('express')
   , utils = require('./utils.js')
   , Logger = require('./logger')
   , ControllerManager = require('./controllermanager')
-  // , Storage = require('./storage.js')
+  , Storage = require('./storage.js')
   // , Generator = require('./generator')
   ;
 
 function Server(basePath, customConfig) {
-    /* istanbul ignore if */
-    if(!basePath){
-        _err('root path');
-    }
-    /* istanbul ignore if */
-    if(!customConfig){
-        customConfig = require(basePath+"/config.js");
-    }
-    this.basePath = basePath;
-    this.application = express();
-    this.config = customConfig;
-    this.storageFolder = [basePath, this.config.app, this.config.data_folder].join(this.config.sep)
-    this.staticsFolder = [basePath, this.config.app, this.config.statics].join(this.config.sep)
-    this.templatesFolder = [basePath, this.config.app, this.config.templates].join(this.config.sep)
-    this.controller = new ControllerManager(this.application, this.basePath)
-    // this.storage = new Storage(storageFolder)
-    // this.generator = new Generator(this, basePath)
+  /* istanbul ignore if */
+  if(!basePath){
+      _err('root path');
+  }
+  /* istanbul ignore if */
+  if(!customConfig){
+      customConfig = require(basePath+"/config.js");
+  }
+  let self = this
+    ;
+  this.basePath = basePath;
+  this.application = express();
+  this.config = customConfig;
+  this.staticsFolder = [basePath, this.config.app, this.config.statics].join(this.config.sep)
+  this.templatesFolder = [basePath, this.config.app, this.config.templates].join(this.config.sep)
+  this.controller = new ControllerManager(this, this.basePath)
+  this.storage = new Storage(this.config)
+  // this.generator = new Generator(this, basePath)
 }
 
 Server.prototype.setConfiguration = function Server_setConfiguration(config) {
-    this.config = config;
+  this.config = config;
 }
 
 Server.prototype.getConfiguration = function Server_getConfiguration() {
-    return this.config;
+  return this.config;
 }
 
 Server.prototype.getApplication = function Server_getApplication() {
-    return this.application;
+  return this.application;
 }
 
 Server.prototype.getBasePath = function Server_getBasePath() {
-    return this.basePath;
+  return this.basePath;
 }
 
 Server.prototype.onListen = function Server_onListen() {
-    return true;    
+  let PORT;
+  /* istanbul ignore if */
+  if(!!this.listener){
+    PORT = ' at ' + this.listener.address().port;
+  } else {
+    PORT = ' and ready...'
+  }
+  Logger.log('success', 'Listening' + PORT);
+  return true;    
 }
 
 Server.prototype.start = function Server_start() {
-    return this.application.listen(this.config, this.onListen);
+  let context = {};
+  context.listener = this.listener = this.application.listen(this.config.port, this.onListen.bind(context));
+  return this.listener; 
 }
 
 module.exports = Server;

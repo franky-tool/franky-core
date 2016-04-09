@@ -6,6 +6,20 @@ let diskdb = require('diskdb')
 
 function Storage(config) {
     this.config = config;
+    if (!this.config) {
+        this.config = {
+            database: {
+                name: "data"
+            }
+        };
+    } else if(!this.config.database){
+        this.config.database = {
+            name: "data"
+        };
+    }
+    if(!utils.folderExists(this.config.database.name)){
+      utils.mkdir(this.config.database.name);
+    }
     this.db = diskdb.connect(this.config.database.name);
 }
 

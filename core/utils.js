@@ -1,6 +1,7 @@
 'use strict'
 
 let fs = require('fs')
+  , mkdirp = require('mkdirp')
   ;
 
 /**
@@ -68,10 +69,18 @@ function requireModule(path) {
   return require(path);
 }
 
+/**
+ * Make a dir from specified path.
+ */
+function mkdir(path) {
+  mkdirp(path);
+}
+
 module.exports = {
     _err: _err,
     folderExists: folderExists,
     fileExists: fileExists,
     getFilesList: getFilesList,
-    requireModule: requireModule
+    requireModule: requireModule,
+    mkdir: mkdir
 }

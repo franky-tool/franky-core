@@ -19,6 +19,11 @@ describe('As a developer I want to instantiate an element for load controllers.\
           put: ()=>{},
           delete: ()=>{},
         }
+        , fakeServer = {
+          getApplication: function fakeGetApplication(){
+            return fakeApp;
+          }
+        }
         , lastMessage
         , lastError
         ;
@@ -55,14 +60,14 @@ describe('As a developer I want to instantiate an element for load controllers.\
           try {
             let cm = new ControllersManager();
           } catch (error) {
-            expect(error.message).to.equal('app is not defined.');
+            expect(error.message).to.equal('server is not defined.');
           }
         });
       });
       describe('When the developer instance it without a base path', function () {
         it('Then get a instance with loadControllers method.', function () {
           try {
-            let cm = new ControllersManager(fakeApp);
+            let cm = new ControllersManager(fakeServer);
           } catch (error) {
             expect(error.message).to.equal('basePath is not defined.');
           }
@@ -70,13 +75,13 @@ describe('As a developer I want to instantiate an element for load controllers.\
       });
       describe('When the developer instance it with a base path', function () {
         it('Then get a instance with loadControllers method.', function () {
-          let cm = new ControllersManager(fakeApp, testControllers);
+          let cm = new ControllersManager(fakeServer, testControllers);
           expect(cm.loadControllers).to.exist;
         });
       });
       describe('When the developer call the loadControllers method', function () {
         it('Then use getFilesList function of utils module.', function (done) {
-          let cm = new ControllersManager(fakeApp, testControllers)
+          let cm = new ControllersManager(fakeServer, testControllers)
             , stub = sinon.stub(utils, "getFilesList", function(path){
                 expect(path).to.be.equals(testControllers);
                 done();
@@ -87,25 +92,25 @@ describe('As a developer I want to instantiate an element for load controllers.\
       });
       describe('When the developer instance it with a base path', function () {
         it('Then get a instance with injectModule method.', function () {
-          let cm = new ControllersManager(fakeApp, testControllers);
+          let cm = new ControllersManager(fakeServer, testControllers);
           expect(cm.injectModule).to.exist;
         });
       });
       describe('When the developer instance it with a base path', function () {
         it('Then get a instance with injectModule method.', function () {
-          let cm = new ControllersManager(fakeApp, testControllers);
+          let cm = new ControllersManager(fakeServer, testControllers);
           expect(cm.injectModule).to.exist;
         });
       });
       describe('When the developer instance it with a base path', function () {
         it('Then get a instance with loadControllerFile method.', function () {
-          let cm = new ControllersManager(fakeApp, testControllers);
+          let cm = new ControllersManager(fakeServer, testControllers);
           expect(cm.loadControllerFile).to.exist;
         });
       });
       describe('When the developer call the loadControllers method', function () {
         it('Then use loadControllerFile function from instance.', function (done) {
-          let cm = new ControllersManager(fakeApp, testControllers)
+          let cm = new ControllersManager(fakeServer, testControllers)
             , stub = sinon.stub(cm, "loadControllerFile", function(path){
                 expect(path).to.be.equals(testControllers+'/samplecontroller.js');
                 cm.loadControllerFile.restore();
@@ -117,7 +122,7 @@ describe('As a developer I want to instantiate an element for load controllers.\
       });
       describe('When the developer call the loadControllers method', function () {
         it('Then use requireModule function of utils module.', function (done) {
-          let cm = new ControllersManager(fakeApp, testControllers)
+          let cm = new ControllersManager(fakeServer, testControllers)
             , stub = sinon.stub(utils, "requireModule", function(path){
                 expect(path).to.be.equals(testControllers+"/samplecontroller.js");
                 expect(lastMessage).to.contains('Importing '+testControllers+"/samplecontroller.js");
@@ -129,7 +134,7 @@ describe('As a developer I want to instantiate an element for load controllers.\
       });
       describe('When the developer call the loadController method with invalid module name as parameter', function () {
         it('Then will write an error message.', function () {
-          let cm = new ControllersManager(fakeApp, testControllers)
+          let cm = new ControllersManager(fakeServer, testControllers)
             , modName = __dirname+"/fake/badcontrollers/superbadcontroller.js"
             ;
           cm.loadControllerFile(modName);
@@ -138,7 +143,7 @@ describe('As a developer I want to instantiate an element for load controllers.\
       });
       describe('When the developer call the loadControllers method from controllermanager instance', function () {
         it('Then iterate over array of path provided by the controller', function () {
-          let cm = new ControllersManager(fakeApp, testControllers)
+          let cm = new ControllersManager(fakeServer, testControllers)
             ;
           lastError = undefined;
           cm.loadControllers();
@@ -149,7 +154,12 @@ describe('As a developer I want to instantiate an element for load controllers.\
       describe('When the developer call the loadControllers method from controller instance', function () {
         it('Then inject a controller module paths and functions into express application', function (done) {
           let anotherFakeApp = {}
-            , cm = new ControllersManager(anotherFakeApp, testControllers)
+            , anotherFakeServer = {
+              getApplication: function anotherFakeMethod(){
+                return anotherFakeApp;
+              }
+            }
+            , cm = new ControllersManager(anotherFakeServer, testControllers)
             ;
           anotherFakeApp.get = function(url, callableElm){
             expect(url).to.contains('/');

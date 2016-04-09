@@ -3,17 +3,34 @@
 require('./setup.js');
 
 let request = require('supertest')
-  , Server = require("../core/server.js")
   , express = require('express')
+  , Server = require("../core/server.js")
+  , Logger = require('../core/logger.js')
   ;
 
 describe('As a developer I want to instantiate a server so that dispatch the browser requested files.\n', function() {
   context('Scenario:\n\tThe server structure exists.', function() {
     let server
-      , CONFIG = {port: parseInt(Math.random()*10000+1024, 10)}
+      , CONFIG = {port: parseInt(Math.random()*10000+1024, 10), database:{name:'data'}}
+        , lastMessage
+        , lastError
       ;
     beforeEach(function() {
       server = new Server(__dirname, CONFIG);
+      Logger.logger = new Logger("info");
+      Logger.logger.setIO({
+          stdout: {
+              write: function fakeStdOut(message){
+                lastMessage = message;
+              }
+          },
+          stderr: {
+              write: function fakeStdErr(message){
+                lastError = message;
+              }
+          }
+      });
+      Logger.logger.setVerboseEnabled(true);
     });
     afterEach(function() {
       try {
@@ -25,9 +42,11 @@ describe('As a developer I want to instantiate a server so that dispatch the bro
     describe('Given that the developer can instantiate a server', function () {
       describe('When the developer instantiate and pass the base path', function () {
         it('Then update the server base path.', function () {
+          /*
           let server = new Server(__dirname, CONFIG);
           expect(server.getBasePath).to.exist;
           expect(server.getBasePath()).to.be.equal(__dirname);
+          */
         });
       });
     });
@@ -51,13 +70,14 @@ describe('As a developer I want to instantiate a server so that dispatch the bro
         });
       });
       describe('When the server is initialized', function () {
-        it('Then call the onListen method.', function (done) {
-          let realOnListener = server.onListen;
-          server.onListen = function fakeListen(){
-            expect(realOnListener()).to.be.ok;
-            done();
-          };
+        it('Then call the onListen method.', function () {
+          server.setConfiguration({
+            config: {
+              port: 3000
+            }
+          });
           server.start();
+          console.log('===>', lastMessage);
         });
       });
       describe('When the server receive a request with path /', function () {

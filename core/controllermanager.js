@@ -4,14 +4,17 @@ let utils = require('./utils.js')
   , Logger = require('./logger.js')
   ;
 
-function ControllerManager(app, basePath){
-  if (!app) {
-    utils._err('app');
+function ControllerManager(server, basePath){
+  if (!server) {
+    utils._err('server');
   }
   if (!basePath) {
     utils._err('basePath');
   }
-  this.app = app;
+  if (!server.getApplication()) {
+    utils._err('server', 'The provided server is not a valid server instance.');
+  }
+  this.server = server;
   this.basePath = basePath;
 }
 
@@ -53,7 +56,7 @@ ControllerManager.prototype.injectModule = function ControllerManager_injectModu
   for(let path in moduleContent){
     for(let method in moduleContent[path]){
       let action = moduleContent[path][method];
-      this.app[method.toLocaleLowerCase()](path, action);
+      this.server.getApplication()[method.toLocaleLowerCase()](path, action);
     }
   }
 }
