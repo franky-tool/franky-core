@@ -11,12 +11,22 @@ let request = require('supertest')
 describe('As a developer I want to instantiate a server so that dispatch the browser requested files.\n', function() {
   context('Scenario:\n\tThe server structure exists.', function() {
     let server
-      , CONFIG = {port: parseInt(Math.random()*10000+1024, 10), database:{name:'data'}}
+      , CONFIG = {
+          port: parseInt(Math.random()*10000+1024, 10),
+          "sources":"src",
+          "statics": "public",
+          "templates": "templates",
+          "plugins": "plugins",
+          "database": {
+            "name": "data"
+          },
+        "sep": "/"
+        }
         , lastMessage
         , lastError
       ;
     beforeEach(function() {
-      server = new Server(__dirname, CONFIG);
+      server = new Server(__dirname+"/fake", false, CONFIG);
       Logger.logger = new Logger("info");
       Logger.logger.setIO({
           stdout: {
@@ -77,7 +87,6 @@ describe('As a developer I want to instantiate a server so that dispatch the bro
             }
           });
           server.start();
-          console.log('===>', lastMessage);
         });
       });
       describe('When the server receive a request with path /', function () {

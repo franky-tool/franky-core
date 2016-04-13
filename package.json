@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "rm -Rf coverage;mocha test",
+    "mocha": "mocha",
+    "mocha:w": "mocha -w",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha test"
   },
   "keywords": [],

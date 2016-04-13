@@ -2,6 +2,7 @@
 
 let fs = require('fs')
   , mkdirp = require('mkdirp')
+  , path = require('path')
   ;
 
 /**
@@ -60,6 +61,28 @@ function getFilesList(fp) {
     return [];
   }
 }
+/**
+ * Return the list of folders stored in specified folder.
+ */
+function getFoldersList(srcpath) {
+  return fs.readdirSync(srcpath).filter(function(file) {
+    return fs.statSync(path.join(srcpath, file)).isDirectory();
+  });
+}
+
+/**
+ * List all files from a specified path.
+ */
+function ls(target) {
+    return getFilesList(target).reduce(function(array, item){
+        if(array.indexOf(item)<0){
+            array.push(item);
+        }
+        return array;
+    }, 
+    getFoldersList(target)
+    );
+}
 
 /* istanbul ignore next */
 /**
@@ -81,6 +104,8 @@ module.exports = {
     folderExists: folderExists,
     fileExists: fileExists,
     getFilesList: getFilesList,
+    getFoldersList: getFoldersList,
+    ls: ls,
     requireModule: requireModule,
     mkdir: mkdir
 }

@@ -32,8 +32,9 @@ describe('As a developer I want to instantiate an intermediary to save informati
     let storage
       , config = {
           database: {
-            name: __dirname+"/data"
-          }
+            name: "data"
+          },
+          sep: "/"
         }
       , collection = 'users'
       , usersData = [
@@ -44,14 +45,15 @@ describe('As a developer I want to instantiate an intermediary to save informati
           name: "Third",
           password: "ho ho ho"
         }
+      , dbfolderpath = __dirname+config.sep+config.database.name
       ;
     before(function(){
       try {
-        rmdir(config.database.name);
+        rmdir(dbfolderpath);
       } catch (error) {}
       try {
-        fs.mkdirSync(config.database.name);
-        fs.writeFile(config.database.name+"/"+collection+".json", JSON.stringify(usersData), function(err) {
+        fs.mkdirSync(dbfolderpath);
+        fs.writeFile(dbfolderpath+"/"+collection+".json", JSON.stringify(usersData), function(err) {
             if(err) {
                 return console.log(err);
             }
@@ -62,11 +64,11 @@ describe('As a developer I want to instantiate an intermediary to save informati
     });
     after(function(){
       try {
-        rmdir(config.database.name);
+        rmdir(dbfolderpath);
       } catch (error) {}
     });
     beforeEach(function() {
-      storage = new Storage(config);
+      storage = new Storage(__dirname, config);
     });
     describe('When the developer instantiate a storage module', function () {
       it('Then will have a method to list the saved information.', function () {

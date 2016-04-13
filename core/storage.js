@@ -1,26 +1,30 @@
 'use strict'
 
 let diskdb = require('diskdb')
+  , Logger = require('./logger.js')
   , utils = require('./utils.js')
   ;
 
-function Storage(config) {
+function Storage(basePath, config) {
     this.config = config;
     if (!this.config) {
         this.config = {
             database: {
                 name: "data"
-            }
+            },
+            sep: '/'
         };
     } else if(!this.config.database){
         this.config.database = {
             name: "data"
         };
     }
-    if(!utils.folderExists(this.config.database.name)){
-      utils.mkdir(this.config.database.name);
+    this.dbpath = basePath + this.config.sep + this.config.database.name;
+    Logger.log('info', "Data path: " + this.dbpath);
+    if(!utils.folderExists(this.dbpath)){
+      utils.mkdir(this.dbpath);
     }
-    this.db = diskdb.connect(this.config.database.name);
+    this.db = diskdb.connect(this.dbpath);
 }
 
 /**
