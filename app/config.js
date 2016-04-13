@@ -8,7 +8,9 @@ var config = {
     "database": {
         name: "data"
     },
-    "sep": "/"
+    "sep": "/",
+    "ignore_prefix": "__",
+    "preprocessor": "sass"
 }
 
 module.exports = config;
