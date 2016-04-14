@@ -83,7 +83,6 @@ Server.prototype.configureApplication = function Server_configureApplication() {
       commentStart: '<!--',
       commentEnd: '-->'
     };
-    Logger.log('info', tagsValue);
     nunjucks.configure(this.templatesFolder, {
         autoescape: true,
         express: this.application,
