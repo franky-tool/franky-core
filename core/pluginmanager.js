@@ -20,9 +20,6 @@ function PluginManager(basePath, serverInstance){
   this.pluginsPath = [this.basePath, this.config.plugins].join(this.config.sep);
   this.commands = [];
   this.processPending = {};
-  this.scope = {
-    "Logger": Logger
-  };
 }
 
 /**
@@ -37,7 +34,7 @@ PluginManager.prototype.loadMiddlewarePlugin = function PluginManager_loadMiddle
     ;
   /* istanbul ignore if */
   if (!!pluginMod.bind) {
-    action = action.bind(this.scope);
+    action = action.bind(this.serverInstance.getScope());
   }
   server.getApplication().use(action);
 }
@@ -57,7 +54,7 @@ PluginManager.prototype.processAll = function PluginManager_processAll(argsparse
       let action = element.callable;
       /* istanbul ignore else */
       if (element.bind) {
-        action = action.bind(this.scope);
+        action = action.bind(this.serverInstance.getScope());
       }
       if (!!element.options.execute) {
         if(element.callable.length==1){
@@ -68,7 +65,7 @@ PluginManager.prototype.processAll = function PluginManager_processAll(argsparse
       } else {
         /* istanbul ignore else */
         if(!!element.options.include){
-          this.scope[key] = action;
+          this.serverInstance.addToScope(key, action);
         }
       }
     }

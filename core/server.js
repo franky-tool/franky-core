@@ -19,6 +19,10 @@ function Server(basePath, verbose, customConfig) {
   let self = this
     , argsparser = new ArgsParser()
     ;
+  this.scope = {
+    "utils": utils,
+    "Logger": Logger
+  };
   this.verbose = (process.argv.indexOf('-v')>=0||process.argv.indexOf('--verbose')>=0) || !!verbose;
   /* istanbul ignore if */
   if(!customConfig){
@@ -28,6 +32,21 @@ function Server(basePath, verbose, customConfig) {
   this.basePath = basePath;
   this.config = customConfig;
   Logger.log('info', "Base path: "+this.basePath);
+  this.sourcesFolder = [basePath, this.config.sources].join(this.config.sep)
+  Logger.log('info', "Sources path: "+this.sourcesFolder);
+  this.staticsFolder = [basePath, this.config.statics].join(this.config.sep)
+  Logger.log('info', "Statics path: "+this.staticsFolder);
+  this.templatesFolder = [basePath, this.config.templates].join(this.config.sep)
+  Logger.log('info', "Templates path: "+this.templatesFolder);
+  this.pluginsFolder = [basePath, this.config.plugins].join(this.config.sep)
+  Logger.log('info', "Plugins path: "+this.pluginsFolder);
+  this.controllersFolder = [basePath, this.config.controllers].join(this.config.sep)
+  Logger.log('info', "Controllers path: "+this.controllersFolder);
+  this.scope['sourcesFolder'] = this.sourcesFolder;
+  this.scope['staticsFolder'] = this.staticsFolder;
+  this.scope['templatesFolder'] = this.templatesFolder;
+  this.scope['pluginsFolder'] = this.pluginsFolder;
+  this.scope['controllersFolder'] = this.controllersFolder;
   this.pluginManager = new PluginManager(basePath, this);
   this.pluginManager.loadCommands();
   argsparser.addOptions(this.pluginManager.getLoadedCommands());
@@ -36,17 +55,9 @@ function Server(basePath, verbose, customConfig) {
   Logger.logger.setVerboseEnabled(this.isVerbose());
   if(!this.pluginManager.processAll(argsparser)){
     Logger.log('info', 'Plugin Manager created.');
-    this.sourcesFolder = [basePath, this.config.sources].join(this.config.sep)
-    Logger.log('info', "Sources path: "+this.sourcesFolder);
-    this.staticsFolder = [basePath, this.config.statics].join(this.config.sep)
-    Logger.log('info', "Statics path: "+this.staticsFolder);
-    this.templatesFolder = [basePath, this.config.templates].join(this.config.sep)
-    Logger.log('info', "Templates path: "+this.templatesFolder);
-    this.templatesFolder = [basePath, this.config.plugins].join(this.config.sep)
-    Logger.log('info', "Plugins path: "+this.templatesFolder);
     this.application = express();
     Logger.log('info', 'Express application instance created.');
-    this.controllerManager = new ControllerManager(this, this.basePath)
+    this.controllerManager = new ControllerManager(this, this.controllersFolder)
     Logger.log('info', 'Controller Manager created.');
     this.storage = new Storage(basePath, this.config)
     Logger.log('info', 'Storage created.');
@@ -78,6 +89,7 @@ Server.prototype.configureApplication = function Server_configureApplication() {
         }
     });
     this.pluginManager.loadPlugins();
+    this.controllerManager.loadControllers();
 }
 
 Server.prototype.isVerbose = function Server_isVerbose() {
@@ -119,6 +131,27 @@ Server.prototype.start = function Server_start() {
   let context = {};
   context.listener = this.listener = this.application.listen(this.config.port, this.onListen.bind(context));
   return this.listener; 
+}
+
+/**
+ * Get the scope of actions loaded from controllers.
+ */
+Server.prototype.getScope = function Server_getScope() {
+  return this.scope;
+}
+
+/**
+ * Set the scope of actions loaded from controllers.
+ */
+Server.prototype.setScope = function Server_setScope(scope) {
+    this.scope = scope;
+}
+
+/**
+ * Set the scope of actions loaded from controllers.
+ */
+Server.prototype.addToScope = function Server_addToScope(key, value) {
+    this.scope[key]=value;
 }
 
 module.exports = Server;

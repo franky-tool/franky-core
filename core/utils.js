@@ -52,6 +52,13 @@ function fileExists(fp) {
 }
 
 /**
+ * Check if file or folder from specified path exists.
+ */
+function exists(fpath) {
+    return (folderExists(fpath)||fileExists(fpath));
+}
+
+/**
  * Return the list of files stored in specified folder.
  */
 function getFilesList(fp) {
@@ -99,13 +106,23 @@ function mkdir(path) {
   mkdirp(path);
 }
 
+/**
+ * Check if express request is for JSON data.
+ */
+function isJSONRequest(req) {
+  return (/application\/json/.test(req.get('content-type').toLowerCase()));
+}
+
+
 module.exports = {
     _err: _err,
     folderExists: folderExists,
     fileExists: fileExists,
     getFilesList: getFilesList,
     getFoldersList: getFoldersList,
+    exists: exists,
     ls: ls,
     requireModule: requireModule,
-    mkdir: mkdir
+    mkdir: mkdir,
+    isJSONRequest: isJSONRequest
 }

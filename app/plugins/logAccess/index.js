@@ -1,7 +1,7 @@
 
 
 function logAccess(req, res, next) {
-  this.Logger.log("info", new Date(), req.method, req.url);
+  this.Logger.log("debug", new Date(), req.method, req.url);
   next();
 }
 

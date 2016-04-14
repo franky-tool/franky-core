@@ -22,7 +22,8 @@ describe('As a developer I want to instantiate an element for load controllers.\
         , fakeServer = {
           getApplication: function fakeGetApplication(){
             return fakeApp;
-          }
+          },
+          getScope: ()=>{ return {}; }
         }
         , lastMessage
         , lastError
@@ -80,10 +81,11 @@ describe('As a developer I want to instantiate an element for load controllers.\
         });
       });
       describe('When the developer call the loadControllers method', function () {
-        it('Then use getFilesList function of utils module.', function (done) {
+        it('Then use ls function from utils module.', function (done) {
           let cm = new ControllersManager(fakeServer, testControllers)
-            , stub = sinon.stub(utils, "getFilesList", function(path){
+            , stub = sinon.stub(utils, "ls", function(path){
                 expect(path).to.be.equals(testControllers);
+                utils.ls.restore();
                 done();
               })
             ;
@@ -103,17 +105,17 @@ describe('As a developer I want to instantiate an element for load controllers.\
         });
       });
       describe('When the developer instance it with a base path', function () {
-        it('Then get a instance with loadControllerFile method.', function () {
+        it('Then get a instance with loadControllerModule method.', function () {
           let cm = new ControllersManager(fakeServer, testControllers);
-          expect(cm.loadControllerFile).to.exist;
+          expect(cm.loadControllerModule).to.exist;
         });
       });
       describe('When the developer call the loadControllers method', function () {
-        it('Then use loadControllerFile function from instance.', function (done) {
+        it('Then use loadControllerModule function from instance.', function (done) {
           let cm = new ControllersManager(fakeServer, testControllers)
-            , stub = sinon.stub(cm, "loadControllerFile", function(path){
+            , stub = sinon.stub(cm, "loadControllerModule", function(path){
                 expect(path).to.be.equals(testControllers+'/samplecontroller.js');
-                cm.loadControllerFile.restore();
+                cm.loadControllerModule.restore();
                 done();
               })
             ;
@@ -137,7 +139,7 @@ describe('As a developer I want to instantiate an element for load controllers.\
           let cm = new ControllersManager(fakeServer, testControllers)
             , modName = __dirname+"/fake/badcontrollers/superbadcontroller.js"
             ;
-          cm.loadControllerFile(modName);
+          cm.loadControllerModule(modName);
           expect(lastError).to.contains('Invalid module '+modName);
         });
       });
@@ -157,6 +159,9 @@ describe('As a developer I want to instantiate an element for load controllers.\
             , anotherFakeServer = {
               getApplication: function anotherFakeMethod(){
                 return anotherFakeApp;
+              },
+              getScope: ()=>{
+                  return {};
               }
             }
             , cm = new ControllersManager(anotherFakeServer, testControllers)

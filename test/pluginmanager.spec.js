@@ -12,12 +12,19 @@ let PluginsManager = require('../core/pluginmanager.js')
 describe('As a developer I want to extend my application with a plugins.\n', function() {
   context('Scenario:\n\tThe pluginmanager class exists.', function() {
     let lastCallable 
+      , scope = {}
       , fakeServer = {
         getConfiguration: function fakeGetConfig(){
           return {
             sep: "/",
             plugins: "plugins"
           }
+        },
+        addToScope: (a, b)=>{
+            scope[a] = b;
+        },
+        getScope: ()=>{
+          return scope;  
         },
         getApplication: function fakeGetApplication() {
             return {
@@ -271,8 +278,9 @@ describe('As a developer I want to extend my application with a plugins.\n', fun
                 }
               }
             }
+            delete scope.sample;
             pm.processAll(fakeArgsParser);
-            expect(pm.scope['sample']).to.exists;
+            expect(scope['sample']).to.exists;
         });
       });
     });

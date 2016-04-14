@@ -3,8 +3,9 @@ var config = {
     "port": 9090,
     "sources":"src",
     "statics": "public",
-    "templates": "templates",
     "plugins": "plugins",
+    "templates": "templates",
+    "controllers": "controllers",
     "database": {
         name: "data"
     },

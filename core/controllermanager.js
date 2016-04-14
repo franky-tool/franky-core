@@ -21,11 +21,11 @@ function ControllerManager(server, basePath){
 /**
  * This method load a controller file from specified path.
  */
-ControllerManager.prototype.loadControllerFile = function ControllerManager_loadControllerFile(modulePath){
+ControllerManager.prototype.loadControllerModule = function ControllerManager_loadControllerModule(modulePath){
   let returnValue = [];
   try {
     /* istanbul ignore else */
-    if(utils.fileExists(modulePath)){
+    if(utils.exists(modulePath)){
       Logger.log('info', 'Importing '+modulePath);
       return utils.requireModule(modulePath)
         ;
@@ -40,10 +40,11 @@ ControllerManager.prototype.loadControllerFile = function ControllerManager_load
  * This method load the controllers from base path.
  */
 ControllerManager.prototype.loadControllers = function ControllerManager_loadControllers() {
-  let files = utils.getFilesList(this.basePath);
+  Logger.log('info', "Loading controllers:");
+  let files = utils.ls(this.basePath);
   for(let idx in files){
     let el = files[idx]
-      , moduleContent = this.loadControllerFile(this.basePath+"/"+el)
+      , moduleContent = this.loadControllerModule(this.basePath+"/"+el)
       ;
     this.injectModule(moduleContent);
   }
@@ -56,6 +57,7 @@ ControllerManager.prototype.injectModule = function ControllerManager_injectModu
   for(let path in moduleContent){
     for(let method in moduleContent[path]){
       let action = moduleContent[path][method];
+      action = action.bind(this.server.getScope());
       this.server.getApplication()[method.toLocaleLowerCase()](path, action);
     }
   }
