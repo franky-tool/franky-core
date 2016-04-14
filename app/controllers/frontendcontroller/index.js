@@ -22,7 +22,7 @@ let getRoot = function getRoot(req, res) {
 
 
 let paths = {
-    '/': {
+    '/:url([a-z]*)?': {
         "get": getRoot
     }
 }
