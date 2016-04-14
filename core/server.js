@@ -75,18 +75,20 @@ Server.prototype.configureApplication = function Server_configureApplication() {
     this.application.use(bodyParser.urlencoded({ extended: false }));
     this.application.use(bodyParser.json());
     this.application.use(express.static(this.staticsFolder));
+    let tagsValue = this.config.tags || {
+      blockStart: '{%',
+      blockEnd: '%}',
+      variableStart: '${',
+      variableEnd: '}',
+      commentStart: '<!--',
+      commentEnd: '-->'
+    };
+    Logger.log('info', tagsValue);
     nunjucks.configure(this.templatesFolder, {
         autoescape: true,
         express: this.application,
         watch: true,
-        tags: this.config.tags || {
-            blockStart: '{%',
-            blockEnd: '%}',
-            variableStart: '&{',
-            variableEnd: '}',
-            commentStart: '<!--',
-            commentEnd: '-->'
-        }
+        tags: tagsValue
     });
     this.pluginManager.loadPlugins();
     this.controllerManager.loadControllers();
