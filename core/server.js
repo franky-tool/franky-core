@@ -6,6 +6,7 @@ let express = require('express')
   , Logger = require('./logger')
   , utils = require('./utils.js')
   , Storage = require('./storage.js')
+  , clr = require('connect-livereload')
   , ArgsParser = require("./argsparser.js")
   , PluginManager = require('./pluginmanager')
   , ControllerManager = require('./controllermanager')
@@ -89,6 +90,7 @@ Server.prototype.configureApplication = function Server_configureApplication() {
         watch: true,
         tags: tagsValue
     });
+    this.application.use(clr());
     this.pluginManager.loadPlugins();
     this.controllerManager.loadControllers();
 }
