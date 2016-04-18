@@ -1,6 +1,7 @@
 'use strict'
 
-let gulp = require('gulp')
+let fs = require('fs')
+  , gulp = require('gulp')
   , less = require('gulp-less')
   , sass = require('gulp-sass')
   , gutil = require('gulp-util')
@@ -116,7 +117,16 @@ function GulpRoutines(basePath, config, debug) {
       gulp.watch(htmlsPath, function htmlReload(file) {
         debug&&gutil.log('Reload html file...');
         if(!!server){
-          server.notify.call(server, file);
+          fs.stat(htmlsPath.split('**')[0], function(err, stats) {
+            let TO = 1000;
+            if(!err){
+              TO = stats['size'];
+            }
+            debug&&gutil.log('Waiting for '+TO+" ms...");
+            setTimeout(function() {
+              server.notify.call(server, file);
+            }, TO);
+          });
         }
       });
       gulp.watch(stylesPath, function cssReload(file) {

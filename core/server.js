@@ -32,20 +32,30 @@ function Server(basePath, verbose, customConfig) {
   Logger.logger.setVerboseEnabled(this.isVerbose());
   this.basePath = basePath;
   this.config = customConfig;
+  if((typeof this.config.templates)==='string'){
+    this.config.templates = [this.config.templates];
+  }
   Logger.log('info', "Base path: "+this.basePath);
   this.sourcesFolder = [basePath, this.config.sources].join(this.config.sep)
   Logger.log('info', "Sources path: "+this.sourcesFolder);
   this.staticsFolder = [basePath, this.config.statics].join(this.config.sep)
   Logger.log('info', "Statics path: "+this.staticsFolder);
-  this.templatesFolder = [basePath, this.config.templates].join(this.config.sep)
-  Logger.log('info', "Templates path: "+this.templatesFolder);
+  this.templatesFolders = this.config.templates.reduce(function(acc, current){
+    if(current.indexOf('/')==0){
+      acc.push(current);
+    } else {
+      acc.push([basePath, current].join(self.config.sep));
+    }
+    return acc;
+  },[]);
+  Logger.log('info', "Templates path: "+this.templatesFolders);
   this.pluginsFolder = [basePath, this.config.plugins].join(this.config.sep)
   Logger.log('info', "Plugins path: "+this.pluginsFolder);
   this.controllersFolder = [basePath, this.config.controllers].join(this.config.sep)
   Logger.log('info', "Controllers path: "+this.controllersFolder);
   this.scope['sourcesFolder'] = this.sourcesFolder;
   this.scope['staticsFolder'] = this.staticsFolder;
-  this.scope['templatesFolder'] = this.templatesFolder;
+  this.scope['templatesFolders'] = this.templatesFolders;
   this.scope['pluginsFolder'] = this.pluginsFolder;
   this.scope['controllersFolder'] = this.controllersFolder;
   this.pluginManager = new PluginManager(basePath, this);
@@ -84,7 +94,7 @@ Server.prototype.configureApplication = function Server_configureApplication() {
       commentStart: '<!--',
       commentEnd: '-->'
     };
-    nunjucks.configure(this.templatesFolder, {
+    nunjucks.configure(this.templatesFolders, {
         autoescape: true,
         express: this.application,
         watch: true,

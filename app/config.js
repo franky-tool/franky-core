@@ -4,7 +4,7 @@ var config = {
     "sources":"src",
     "statics": "public",
     "plugins": "plugins",
-    "templates": "templates",
+    "templates": ["templates"],
     "controllers": "controllers",
     "database": {
         name: "data"
