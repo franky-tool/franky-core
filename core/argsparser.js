@@ -1,6 +1,7 @@
 'use strict'
 
-let program = require('commander')
+let utils = require('./utils.js')
+  , program = utils.requireModule('commander')
   ;
 
 /**

@@ -1,8 +1,8 @@
 'use strict'
 
-let diskdb = require('diskdb')
+let utils = require('./utils.js')
   , Logger = require('./logger.js')
-  , utils = require('./utils.js')
+  , diskdb = utils.requireModule('diskdb')
   ;
 
 function Storage(basePath, config) {

@@ -8,9 +8,14 @@ if(require.main === module) {
     ;
 	server.start();
 } else {
-  let gulp_routines = require('./core/gulp_routines.js')
+  let utils = require('./core/utils')
     ;
   module.exports = {
-    Server: Server
+    Server: Server,
+    getGulpRoutines: function getGulpRoutines(){
+      let GulpRoutines = require('./core/gulproutines')
+      return GulpRoutines;
+    },
+    utils: utils
 	};
 }

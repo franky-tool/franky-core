@@ -1,15 +1,15 @@
 'use strict'
 
-let express = require('express')
-  , bodyParser = require('body-parser')
-  , nunjucks = require('nunjucks')
-  , Logger = require('./logger')
+let Logger = require('./logger')
   , utils = require('./utils.js')
   , Storage = require('./storage.js')
-  , clr = require('connect-livereload')
   , ArgsParser = require("./argsparser.js")
   , PluginManager = require('./pluginmanager')
   , ControllerManager = require('./controllermanager')
+  , express = utils.requireModule('express')
+  , bodyParser = utils.requireModule('body-parser')
+  , nunjucks = utils.requireModule('nunjucks')
+  , clr = utils.requireModule('connect-livereload')
   ;
 
 function Server(basePath, verbose, customConfig) {
@@ -58,6 +58,7 @@ function Server(basePath, verbose, customConfig) {
   this.scope['templatesFolders'] = this.templatesFolders;
   this.scope['pluginsFolder'] = this.pluginsFolder;
   this.scope['controllersFolder'] = this.controllersFolder;
+  this.scope['config'] = this.config;
   this.pluginManager = new PluginManager(basePath, this);
   this.pluginManager.loadCommands();
   argsparser.addOptions(this.pluginManager.getLoadedCommands());
@@ -94,15 +95,24 @@ Server.prototype.configureApplication = function Server_configureApplication() {
       commentStart: '<!--',
       commentEnd: '-->'
     };
-    nunjucks.configure(this.templatesFolders, {
+    this.pluginManager.loadFilterPlugins();
+    let njksEnv = nunjucks.configure(this.templatesFolders, {
         autoescape: true,
         express: this.application,
         watch: true,
         tags: tagsValue
     });
+    this.addTemplateFilters(njksEnv, this.pluginManager.getLoadedFilters());
     this.application.use(clr());
     this.pluginManager.loadPlugins();
     this.controllerManager.loadControllers();
+}
+
+Server.prototype.addTemplateFilters = function Server_addTemplateFilters(environment, filters) {
+  for(let key in filters){
+    Logger.log('info', '\t\t- '+key);
+    environment.addFilter(key, filters[key].bind(this.scope)());
+  }
 }
 
 Server.prototype.isVerbose = function Server_isVerbose() {

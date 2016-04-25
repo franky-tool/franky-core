@@ -283,6 +283,13 @@ describe('As a developer I want to extend my application with a plugins.\n', fun
             expect(scope['sample']).to.exists;
         });
       });
+      describe('When the developer create an instance', function () {
+        it('Then have a method loadFiltersPlugin', function () {
+          let pm = new PluginsManager(basePath, fakeServer)
+            ;
+          expect(pm.loadFiltersPlugin).to.exists;
+        });
+      });
     });
   });
 });

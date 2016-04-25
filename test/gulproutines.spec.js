@@ -18,10 +18,10 @@ describe('As a developer I want to have a set of tools routines to automatize ta
     describe('Given the developer need to compile less files', function () {
       describe('When the developer instance the gulp routines', function () {
         it('Then will have a method that return all routine names.', function () {
-          let gr = new GulpRoutines(basePath, config);
+          let gr = new GulpRoutines(basePath, config, true);
           expect(gr.getRoutineNames).to.exists;
           let rnms = gr.getRoutineNames();
-          expect(rnms.length).to.be.equals(6);
+          expect(rnms.length).to.be.equals(9);
         });
       });
       describe('When the developer call a function', function () {

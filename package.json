@@ -4,23 +4,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "rm -Rf coverage;mocha test",
+    "test": "mocha test",
     "mocha": "mocha",
     "mocha:w": "mocha -w",
-    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha test"
+    "coverage": "rm -Rf coverage;istanbul cover ./node_modules/mocha/bin/_mocha test"
   },
   "keywords": [],
   "author": "Oscar Granada @oagranada",
   "license": "MIT",
   "devDependencies": {
+    "babel-core": "^6.5.2",
+    "babel-preset-es2015": "^6.5.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "connect-livereload": "^0.5.4",
-    "gulp-batch": "^1.0.5",
-    "gulp-watch": "^4.3.5",
     "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
     "sinon": "^1.17.3",
+    "gulp": "^3.9.1",
     "supertest": "^1.2.0"
   },
   "dependencies": {
@@ -28,6 +29,14 @@
     "chalk": "^1.1.3",
     "diskdb": "^0.1.14",
     "express": "^4.13.4",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-ignore": "^2.0.1",
+    "gulp-less": "^3.0.5",
+    "gulp-live-server": "0.0.29",
+    "gulp-sass": "^2.3.1",
+    "gulp-sourcemaps": "^2.0.0-alpha",
+    "gulp-stylus": "^2.3.1",
     "mkdirp": "^0.5.1",
     "nunjucks": "^2.4.1"
   }

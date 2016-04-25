@@ -1,8 +1,8 @@
 'use strict'
 
 let fs = require('fs')
-  , mkdirp = require('mkdirp')
   , path = require('path')
+  , mkdirp = requireModule('mkdirp')
   ;
 
 /**
@@ -96,9 +96,16 @@ function ls(target) {
  * Return a required module.
  */
 function requireModule(path) {
-  return require(path);
+  if(GLOBAL.__libraries==undefined){
+    GLOBAL.__libraries = {};
+  }
+  if(!GLOBAL.__libraries[path]){
+    GLOBAL.__libraries[path] = require(path);
+  }
+  return GLOBAL.__libraries[path];
 }
 
+/* istanbul ignore next */
 /**
  * Make a dir from specified path.
  */
@@ -114,6 +121,20 @@ function isJSONRequest(req) {
 }
 
 
+/**
+ * Get the content from JSON file. 
+ */
+function getJSON(filepath, verbose) {
+  let obj;
+  try {
+    obj = JSON.parse(fs.readFileSync(filepath, 'utf8'));
+  } catch (error) {
+    verbose&&console.error(error);
+    obj = null;
+  }
+  return obj;
+}
+
 module.exports = {
     _err: _err,
     folderExists: folderExists,
@@ -124,5 +145,6 @@ module.exports = {
     ls: ls,
     requireModule: requireModule,
     mkdir: mkdir,
-    isJSONRequest: isJSONRequest
+    isJSONRequest: isJSONRequest,
+    getJSON: getJSON
 }

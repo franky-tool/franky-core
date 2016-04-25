@@ -1,6 +1,7 @@
 
-var chalk = require('chalk')
-  , fs = require('fs')
+var fs = require('fs')
+  , utils = require('./utils.js')
+  , chalk = utils.requireModule('chalk')
   ;
 
 var FILEPATH = "/tmp/franky.log"

@@ -19,6 +19,7 @@ function PluginManager(basePath, serverInstance){
   this.basePath = basePath;
   this.pluginsPath = [this.basePath, this.config.plugins].join(this.config.sep);
   this.commands = [];
+  this.filters = {};
   this.processPending = {};
 }
 
@@ -80,6 +81,62 @@ PluginManager.prototype.getLoadedCommands = function PluginManager_getLoadedComm
   return this.commands;
 }
 
+/**
+ * Return loaded filter plugins
+ */
+PluginManager.prototype.getLoadedFilters = function PluginManager_getLoadedFilters(pluginMod) {
+  return this.filters;
+}
+
+/**
+ * Load plugin that provide an extra filters for templates.
+ */
+PluginManager.prototype.loadFilterPlugins = function PluginManager_loadFilterPlugins(pluginMod) {
+  let modpath = [this.pluginsPath].join(this.config.sep)
+    , filesList = utils.ls(modpath);
+    ;
+  for(let p in filesList){
+    this.loadFilter(filesList[p]);
+  }
+}
+
+/**
+ * Load a command filter plugin acording the name.
+ */
+PluginManager.prototype.loadFilter = function PluginManager_loadFilter(pluginName) {
+  /* istanbul ignore if */
+  if (!pluginName) {
+    utils._err('pluginName');
+  }
+  let modpath = [this.pluginsPath, pluginName].join(this.config.sep)
+    , pluginMod = utils.requireModule(modpath)
+    ;
+  if (pluginMod.type.toLowerCase()==='filter') {
+    Logger.log('info', "\t* Loading "+pluginName+" as "+pluginMod.type.toLowerCase());
+    this.loadFilterPlugin(pluginMod);
+  }
+}
+
+/**
+ * Load plugin that provide a template filter functionality.
+ */
+PluginManager.prototype.loadFilterPlugin = function PluginManager_loadFilterPlugin(pluginMod) {
+  /* istanbul ignore if */
+  if (pluginMod.type.toLowerCase()!=='filter') {
+    utils._err('plugin.type', "'"+pluginMod.type+"' is invalid plugin type.")
+  }
+  for(let key in pluginMod.filters){
+    if(this.filters[key]==undefined){
+      this.filters[key] = pluginMod.filters[key]
+    } else {
+      Logger.log('error', "Filter name "+key+" has already taken.");
+    }
+  }
+} 
+
+/**
+ * Load plugin that provide a command line functionality.
+ */
 PluginManager.prototype.loadCommandlinePlugin = function PluginManager_loadCommandlinePlugin(pluginMod) {
   /* istanbul ignore if */
   if (pluginMod.type.toLowerCase()!=='commandline') {
@@ -91,7 +148,8 @@ PluginManager.prototype.loadCommandlinePlugin = function PluginManager_loadComma
   if(!!pluginMod.command.value){
     /* istanbul ignore else */
     if(pluginMod.command.value.indexOf('--')>0){
-      let plgName = pluginMod.command.value.split('--')[1].split(' ')[0]; 
+      let plgName = pluginMod.command.value.split('--')[1].split(' ')[0];
+      plgName = plgName.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); }); 
       this.processPending[plgName] = pluginMod;
     }
     cmd.push(pluginMod.command.value);
@@ -118,11 +176,9 @@ PluginManager.prototype.loadCommand = function PluginManager_loadCommand(pluginN
   let modpath = [this.pluginsPath, pluginName].join(this.config.sep)
     , pluginMod = utils.requireModule(modpath)
     ;
-  switch (pluginMod.type.toLowerCase()) {
-    case 'commandline':
-      Logger.log('info', "\t* Loading "+pluginName+" as "+pluginMod.type.toLowerCase());
-      this.loadCommandlinePlugin(pluginMod);
-      break;
+  if (pluginMod.type.toLowerCase()==='commandline') {
+    Logger.log('info', "\t* Loading "+pluginName+" as "+pluginMod.type.toLowerCase());
+    this.loadCommandlinePlugin(pluginMod);
   }
 }
 
@@ -136,11 +192,9 @@ PluginManager.prototype.loadPlugin = function PluginManager_loadPlugin(pluginNam
   let modpath = [this.pluginsPath, pluginName].join(this.config.sep)
     , pluginMod = utils.requireModule(modpath)
     ;
-  switch (pluginMod.type.toLowerCase()) {
-    case 'middleware':
-      Logger.log('info', "\t* Loading "+pluginName+" as "+pluginMod.type.toLowerCase());
-      this.loadMiddlewarePlugin(pluginMod);
-      break;
+  if (pluginMod.type.toLowerCase()==='middleware') {
+    Logger.log('info', "\t* Loading "+pluginName+" as "+pluginMod.type.toLowerCase());
+    this.loadMiddlewarePlugin(pluginMod);
   }
 }
 

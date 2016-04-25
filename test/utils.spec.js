@@ -3,6 +3,7 @@
 require('./setup.js');
 
 let utils = require("../core/utils.js")
+  , sinon = require('sinon')
   ;
 
 
@@ -66,6 +67,32 @@ describe('As a developer I want to have a set of tools to made more easy develop
           it('Then return true', function () {
             let path = __dirname+'/fake/controllers/samplecontroller.js';
             expect(utils.fileExists(path)).to.be.true;
+          });
+        });
+        describe('When the method utils.isJSONRequest is invoked with fake request', function () {
+          it('Then return true if content-type is appication/json', function () {
+            let retVal = "application/json" 
+              , fakeExpressRequest = {
+              get: function(type){
+                return retVal;
+              }
+            }
+            expect(utils.isJSONRequest(fakeExpressRequest)).to.be.true;
+            retVal = "text/text";
+            expect(utils.isJSONRequest(fakeExpressRequest)).to.be.false;
+          });
+        });
+        describe('When the method utils.getJSON is invoked with params __dirname+"/fake/sample.json"', function () {
+          it('Then return a Javascript object.', function () {
+            let r = utils.getJSON(__dirname+"/fake/plugins/command/sample.json");
+            expect(r.a).to.be.equal(1);
+            expect(r.b.length).to.be.equal(3);
+          });
+        });
+        describe('When the method utils.getJSON is invoked with params __dirname+"/fake/sample2.json"', function () {
+          it('Then catch an error', function () {
+            let r = utils.getJSON(__dirname+"/fake/plugins/command/sample2.json", true);
+            expect(r).to.be.null;
           });
         });
       });

@@ -1,20 +1,18 @@
 'use strict'
 
 let fs = require('fs')
-  , gulp = require('gulp')
-  , less = require('gulp-less')
-  , sass = require('gulp-sass')
-  , gutil = require('gulp-util')
-  , babel = require('gulp-babel')
-  , watch = require('gulp-watch')
-  , batch = require('gulp-batch')
-  , stylus = require('gulp-stylus')
-  , gulpIgnore = require('gulp-ignore')
-  , prefix = require('gulp-autoprefixer')
-  , sourcemaps = require('gulp-sourcemaps')
-  , gulpLiveServer = require('gulp-live-server')
+  , utils = require('./utils.js')
+  , gulp = utils.requireModule('gulp')
+  , less = utils.requireModule('gulp-less')
+  , sass = utils.requireModule('gulp-sass')
+  , gutil = utils.requireModule('gulp-util')
+  , babel = utils.requireModule('gulp-babel')
+  , stylus = utils.requireModule('gulp-stylus')
+  , gulpIgnore = utils.requireModule('gulp-ignore')
+  , prefix = utils.requireModule('gulp-autoprefixer')
+  , sourcemaps = utils.requireModule('gulp-sourcemaps')
+  , gulpLiveServer = utils.requireModule('gulp-live-server')
   ;
-  
 function GulpRoutines(basePath, config, debug) {
   let ignored = '**/'+config.ignore_prefix+'*.*'
     , src = config.sources
@@ -24,11 +22,19 @@ function GulpRoutines(basePath, config, debug) {
     , SEP = config.sep
     , mainFile = config.mainFile||"index.js"
     , server
+    , jsSourcePath = [app, src, 'js/**/*.js'].join(SEP)
+    , lessSourcePath = [app, src, 'styles/**/*.less'].join(SEP)
+    , sassSourcePath = [app, src, 'styles/**/*.scss'].join(SEP)
+    , stylusSourcePath = [app, src, 'styles/**/*.styl'].join(SEP)
     ;
   debug = !!debug;
+  debug&&gutil.log("JS Source Path:", jsSourcePath);
+  debug&&gutil.log("Less Source Path:", lessSourcePath);
+  debug&&gutil.log("Sass Source Path:", sassSourcePath);
+  debug&&gutil.log("Stylus Source Path:", stylusSourcePath);
   this.routines = {
     'es6': function GulpRoutines_es6() {
-      gulp.src([app, src, 'js/**/*.js'].join(SEP))
+      gulp.src(jsSourcePath)
       .pipe(gulpIgnore.exclude(ignored))
       .pipe(gulpIgnore.exclude('**/**.min.js'))
       .pipe(sourcemaps.init())
@@ -46,7 +52,7 @@ function GulpRoutines(basePath, config, debug) {
     },
 
     'less': function GulpRoutines_less() {
-      gulp.src([app, src, 'styles/*.less'].join(SEP))
+      gulp.src(lessSourcePath)
       .pipe(gulpIgnore.exclude(ignored))
       .pipe(sourcemaps.init())
       .pipe(less())
@@ -61,7 +67,7 @@ function GulpRoutines(basePath, config, debug) {
     },
 
     'sass': function GulpRoutines_sass() {
-      gulp.src([app, src, 'styles/*.scss'].join(SEP))
+      gulp.src(sassSourcePath)
       .pipe(gulpIgnore.exclude(ignored))
       .pipe(sourcemaps.init())
       .pipe(sass().on('error', sass.logError))
@@ -73,7 +79,7 @@ function GulpRoutines(basePath, config, debug) {
     },
 
     'stylus': function GulpRoutines_stylus() {
-      gulp.src([app, src, 'styles/*.styl'].join(SEP))
+      gulp.src(stylusSourcePath)
       .pipe(gulpIgnore.exclude(ignored))
       .pipe(sourcemaps.init())
       .pipe(stylus())
@@ -120,10 +126,11 @@ function GulpRoutines(basePath, config, debug) {
           fs.stat(htmlsPath.split('**')[0], function(err, stats) {
             let TO = 1000;
             if(!err){
-              TO = stats['size'];
+              TO = stats['size']*2;
             }
             debug&&gutil.log('Waiting for '+TO+" ms...");
             setTimeout(function() {
+              debug&&gutil.log("done ...");
               server.notify.call(server, file);
             }, TO);
           });
