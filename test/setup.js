@@ -6,6 +6,6 @@ var chaiAsPromised = require('chai-as-promised');
 
 chai.use(chaiAsPromised);
 
-GLOBAL.AssertionError = chai.AssertionError;
-GLOBAL.expect = chai.expect;
+global.AssertionError = chai.AssertionError;
+global.expect = chai.expect;
 

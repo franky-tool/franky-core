@@ -22,7 +22,8 @@ function Server(basePath, verbose, customConfig) {
     ;
   this.scope = {
     "utils": utils,
-    "Logger": Logger
+    "Logger": Logger,
+    "basePath": basePath
   };
   this.verbose = (process.argv.indexOf('-v')>=0||process.argv.indexOf('--verbose')>=0) || !!verbose;
   /* istanbul ignore if */
@@ -48,6 +49,9 @@ function Server(basePath, verbose, customConfig) {
     }
     return acc;
   },[]);
+  this.application = express();
+  Logger.log('info', 'Express application instance created.');
+  this.scope["application"] = this.application;
   Logger.log('info', "Templates path: "+this.templatesFolders);
   this.pluginsFolder = [basePath, this.config.plugins].join(this.config.sep)
   Logger.log('info', "Plugins path: "+this.pluginsFolder);
@@ -61,17 +65,16 @@ function Server(basePath, verbose, customConfig) {
   this.scope['config'] = this.config;
   this.pluginManager = new PluginManager(basePath, this);
   this.pluginManager.loadCommands();
-  argsparser.addOptions(this.pluginManager.getLoadedCommands());
+  argsparser.addOptions(this.pluginManager.getLoadedCommands(), this.scope);
   argsparser.parse();
   this.verbose = argsparser.get("verbose");
   Logger.logger.setVerboseEnabled(this.isVerbose());
   if(!this.pluginManager.processAll(argsparser)){
     Logger.log('info', 'Plugin Manager created.');
-    this.application = express();
-    Logger.log('info', 'Express application instance created.');
     this.controllerManager = new ControllerManager(this, this.controllersFolder)
     Logger.log('info', 'Controller Manager created.');
-    this.storage = new Storage(basePath, this.config)
+    this.storage = new Storage(basePath, this.config);
+    this.scope['storage'] = this.storage;
     Logger.log('info', 'Storage created.');
     this.configureApplication();
     this.run = true;
@@ -103,7 +106,9 @@ Server.prototype.configureApplication = function Server_configureApplication() {
         tags: tagsValue
     });
     this.addTemplateFilters(njksEnv, this.pluginManager.getLoadedFilters());
-    this.application.use(clr());
+    if(this.config.autoreload==='liveserver'){
+      this.application.use(clr());
+    }
     this.pluginManager.loadPlugins();
     this.controllerManager.loadControllers();
 }
@@ -111,7 +116,7 @@ Server.prototype.configureApplication = function Server_configureApplication() {
 Server.prototype.addTemplateFilters = function Server_addTemplateFilters(environment, filters) {
   for(let key in filters){
     Logger.log('info', '\t\t- '+key);
-    environment.addFilter(key, filters[key].bind(this.scope)());
+    environment.addFilter(key, filters[key].bind(this.scope)() );
   }
 }
 

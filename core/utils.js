@@ -96,13 +96,13 @@ function ls(target) {
  * Return a required module.
  */
 function requireModule(path) {
-  if(GLOBAL.__libraries==undefined){
-    GLOBAL.__libraries = {};
+  if(global.__libraries==undefined){
+    global.__libraries = {};
   }
-  if(!GLOBAL.__libraries[path]){
-    GLOBAL.__libraries[path] = require(path);
+  if(!global.__libraries[path]){
+    global.__libraries[path] = require(path);
   }
-  return GLOBAL.__libraries[path];
+  return global.__libraries[path];
 }
 
 /* istanbul ignore next */

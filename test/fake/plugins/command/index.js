@@ -11,16 +11,16 @@ module.exports = {
   "callable": sample,
   "type": "commandline",
   "bind": true,
-  "options":{
-    "exit": true,
-    "execute": true,
-    "include": true
-  },
-  "command":{
+  "commands":[{
+    "options":{
+      "exit": true,
+      "execute": true,
+      "include": true
+    },
     "value": "-s, --sample <name>",
     "help":"sample help",
     "preprocessor": prepro,
     "initial": null
-  }
+  }]
 };
 

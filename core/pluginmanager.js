@@ -69,6 +69,8 @@ PluginManager.prototype.processAll = function PluginManager_processAll(argsparse
           this.serverInstance.addToScope(key, action);
         }
       }
+    } else if(!element.callable && argValue){
+      Logger.log('critical', 'No action for parameter "'+key+'".');
     }
   }
   return retValue;
@@ -134,34 +136,48 @@ PluginManager.prototype.loadFilterPlugin = function PluginManager_loadFilterPlug
   }
 } 
 
-/**
- * Load plugin that provide a command line functionality.
- */
-PluginManager.prototype.loadCommandlinePlugin = function PluginManager_loadCommandlinePlugin(pluginMod) {
-  /* istanbul ignore if */
-  if (pluginMod.type.toLowerCase()!=='commandline') {
-    utils._err('plugin.type', "'"+pluginMod.type+"' is invalid plugin type.")
-  }
+PluginManager.prototype.loadSingleCommand = function PluginManager_loadSingleCommand(command) {
   let cmd = []
     ;
   /* istanbul ignore else */
-  if(!!pluginMod.command.value){
+  if(!!command.value){
     /* istanbul ignore else */
-    if(pluginMod.command.value.indexOf('--')>0){
-      let plgName = pluginMod.command.value.split('--')[1].split(' ')[0];
+    if(command.value.indexOf('--')>0){
+      let plgName = command.value.split('--')[1].split(' ')[0];
       plgName = plgName.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); }); 
-      this.processPending[plgName] = pluginMod;
+      this.processPending[plgName] = command;
+      // TODO:
     }
-    cmd.push(pluginMod.command.value);
+    cmd.push(command.value);
     /* istanbul ignore else */
-    if(!!pluginMod.command.help){
-      cmd.push(pluginMod.command.help);
+    if(!!command.help){
+      cmd.push(command.help);
     }
     /* istanbul ignore else */
-    if(!!pluginMod.command.preprocessor){
-      cmd.push(pluginMod.command.preprocessor);
+    if(!!command.preprocessor){
+      cmd.push(command.preprocessor);
     }
     this.commands.push(cmd);
+  }
+}
+
+/**
+ * Load plugin that provide a command line functionality.
+ */
+PluginManager.prototype.loadCommandlinePlugin = function PluginManager_loadCommandlinePlugin(pluginMod, pluginName) {
+  /* istanbul ignore if */
+  if (pluginMod.type.toLowerCase()!=='commandline') {
+    utils._err('plugin.type', "'"+pluginMod.type+"' is invalid plugin type.")
+  }  
+  if(!!(pluginMod.commands)){
+    let command;
+    for(let commandIndex=0; commandIndex<pluginMod.commands.length; commandIndex++){
+      command = pluginMod.commands[commandIndex];
+      this.loadSingleCommand(command)
+    }
+  } else if(!!pluginMod.command){
+    Logger.log('critical', 'Plugin "'+pluginName+'" contract is too old.');
+    process.exit(-1);
   }
 } 
 
@@ -176,9 +192,9 @@ PluginManager.prototype.loadCommand = function PluginManager_loadCommand(pluginN
   let modpath = [this.pluginsPath, pluginName].join(this.config.sep)
     , pluginMod = utils.requireModule(modpath)
     ;
-  if (pluginMod.type.toLowerCase()==='commandline') {
+  if (!!pluginMod.type && pluginMod.type.toLowerCase()==='commandline') {
     Logger.log('info', "\t* Loading "+pluginName+" as "+pluginMod.type.toLowerCase());
-    this.loadCommandlinePlugin(pluginMod);
+    this.loadCommandlinePlugin(pluginMod, pluginName);
   }
 }
 

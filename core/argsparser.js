@@ -11,9 +11,8 @@ function ArgsParser() {
   this.program = program;
   this.program
     .version('0.0.1')
-    .option('-g, --generate', 'Generate static site')
     .option('-v, --verbose', 'Show verbose output')
-    .option('-f, --flag-server', 'Flag for server recognition')
+  ;
 }
 
 /**
@@ -26,9 +25,12 @@ ArgsParser.prototype.addOption = function ArgsParser_addOption(option) {
 /**
  * Agregate many options to command line parser.
  */
-ArgsParser.prototype.addOptions = function ArgsParser_addOptions(options) {
+ArgsParser.prototype.addOptions = function ArgsParser_addOptions(options, context) {
   for (let index = 0; index < options.length; index++) {
     let element = options[index];
+    if (!!context && (typeof(element[element.length-1])==='function')) {
+      element[element.length-1] = element[element.length-1].bind(context);
+    }
     this.addOption(element);
   }
 }

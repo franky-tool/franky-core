@@ -8,19 +8,21 @@ function prepro(name) {
 }
 
 module.exports = {
-  "callable": sample,
   "type": "commandline",
-  "bind": true,
-  "options":{
-    "exit": true,
-    "execute": true,
-    "include": true
-  },
-  "command":{
-    "value": "-s, --sample <name>",
-    "help":"sample help",
-    "preprocessor": prepro,
-    "initial": null
-  }
+  "commands":[
+    {
+      "callable": sample,
+      "bind": true,
+      "options":{
+        "exit": true,
+        "execute": true,
+        "include": true
+      },
+      "value": "-s, --sample <name>",
+      "help":"sample help",
+      "preprocessor": prepro,
+      "initial": null
+    }
+  ]
 };
 

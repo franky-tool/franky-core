@@ -1,6 +1,6 @@
 {
   "name": "franky-core",
-  "version": "1.0.0",
+  "version": "2.1.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,14 @@
     "mocha:w": "mocha -w",
     "coverage": "rm -Rf coverage;istanbul cover ./node_modules/mocha/bin/_mocha test"
   },
-  "keywords": [],
   "author": "Oscar Granada @oagranada",
+  "repository": "https://github.com/ogranada/franky-core",
+  "keywords": [
+    "site",
+    "generator",
+    "static",
+    "node"
+  ],
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.5.2",
@@ -26,6 +32,7 @@
   },
   "dependencies": {
     "body-parser": "^1.15.0",
+    "browser-sync": "^2.12.10",
     "chalk": "^1.1.3",
     "diskdb": "^0.1.14",
     "express": "^4.13.4",
