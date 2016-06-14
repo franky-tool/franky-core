@@ -1,6 +1,6 @@
 [submodule "app/controllers/frontendcontroller"]
 	path = app/controllers/frontendcontroller
-    url = https://github.com/franky-tool/franky-frontendcontroller
+	url = https://github.com/franky-tool/franky-frontendcontroller
 [submodule "app/plugins/generator"]
 	path = app/plugins/generator
 	url = https://github.com/franky-tool/franky-sitegenerator
