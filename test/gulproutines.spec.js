@@ -21,7 +21,7 @@ describe('As a developer I want to have a set of tools routines to automatize ta
           let gr = new GulpRoutines(basePath, config, true);
           expect(gr.getRoutineNames).to.exists;
           let rnms = gr.getRoutineNames();
-          expect(rnms.length).to.be.equals(9);
+          expect(rnms.length).to.be.equals(10);
         });
       });
       describe('When the developer call a function', function () {
