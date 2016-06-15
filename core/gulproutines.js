@@ -193,16 +193,20 @@ function GulpRoutines(basePath, config, debug) {
         server.start();
       } else {
         let file = [basePath, '..', mainFile].join(config.sep);
-        let sp = launchProcess('node', [file]);
+        let sp = launchProcess('node', [file], function(out){
+          let txt = ''+out;
+          if(txt.indexOf('Listening at')>-1){
+            browserSync.init({
+              proxy: "http://localhost:"+config.port
+            });
+          }
+        });
         server = {
           stop: function(){
             sp.kill();
           },
           notify: function(){}
         }
-        browserSync.init({
-            proxy: "http://localhost:"+config.port
-        });
       }
     }],
     'watch': function GulpRoutines_watch() {
