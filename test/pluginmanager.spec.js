@@ -20,6 +20,16 @@ describe('As a developer I want to extend my application with a plugins.\n', fun
             plugins: "plugins"
           }
         },
+        config: {
+          tags: {
+            blockStart: '{%',
+            blockEnd: '%}',
+            variableStart: '${',
+            variableEnd: '}$',
+            commentStart: '<!--',
+            commentEnd: '-->'
+          }
+        },
         addToScope: (a, b)=>{
             scope[a] = b;
         },
@@ -280,14 +290,95 @@ describe('As a developer I want to extend my application with a plugins.\n', fun
             }
             delete scope.sample;
             pm.processAll(fakeArgsParser);
-            expect(scope['sample']).to.exists;
+            expect(scope['sample']).to.not.be.undefined;
         });
       });
       describe('When the developer create an instance', function () {
         it('Then have a method loadFiltersPlugin', function () {
           let pm = new PluginsManager(basePath, fakeServer)
             ;
-          expect(pm.loadFiltersPlugin).to.exists;
+          expect(pm.loadFilterPlugins).to.not.be.undefined;
+        });
+      });
+      describe('When the developer create an instance', function () {
+        it('Then have a method loadTemplateEngines', function () {
+          let pm = new PluginsManager(basePath, fakeServer)
+            ;
+          expect(pm.loadTemplateEngines).to.not.be.undefined;
+        });
+      });
+      describe('When the developer create an instance', function () {
+        it('Then have a method loadTemplateEngine', function () {
+          let pm = new PluginsManager(basePath, fakeServer)
+            ;
+          expect(pm.loadTemplateEngine).to.not.be.undefined;
+        });
+      });
+      describe('When the developer create an instance', function () {
+        it('Then have a method loadTemplateEnginePlugin', function () {
+          let pm = new PluginsManager(basePath, fakeServer)
+            ;
+          expect(pm.loadTemplateEnginePlugin).to.not.be.undefined;
+        });
+      });
+      describe('When the developer create an instance and call loadTemplateEngines method', function () {
+        it('Then call loadTemplateEngine method', function () {
+          let localFakeServer = JSON.parse(JSON.stringify(fakeServer));
+          localFakeServer.config = {
+            plugins: 'plugins',
+            sep: '/',
+            tags: {
+              blockStart: '{%',
+              blockEnd: '%}',
+              variableStart: '${',
+              variableEnd: '}$',
+              commentStart: '<!--',
+              commentEnd: '-->'
+            }
+          };
+          localFakeServer.getConfiguration = function(){
+            return localFakeServer.config;
+          };
+          localFakeServer.getScope = function(){
+            return {utils: utils};
+          };
+          let pm = new PluginsManager(basePath, localFakeServer)
+            , spy = sinon.spy(pm, "loadTemplateEngine")
+            ;
+          localFakeServer.pluginManager = pm;
+          pm.loadTemplateEngines();
+          expect(spy.called).to.be.true;
+          pm.loadTemplateEngine.restore();
+        });
+      });
+      describe('When the developer create an instance and call loadTemplateEngine method', function () {
+        it('Then call loadTemplateEnginePlugin method', function () {
+          let localFakeServer = JSON.parse(JSON.stringify(fakeServer));
+          localFakeServer.config = {
+            plugins: 'plugins',
+            sep: '/',
+            tags: {
+              blockStart: '{%',
+              blockEnd: '%}',
+              variableStart: '${',
+              variableEnd: '}$',
+              commentStart: '<!--',
+              commentEnd: '-->'
+            }
+          };
+          localFakeServer.getConfiguration = function(){
+            return localFakeServer.config;
+          };
+          localFakeServer.getScope = function(){
+            return {utils: utils};
+          };
+          let pm = new PluginsManager(basePath, localFakeServer)
+            , spy = sinon.spy(pm, "loadTemplateEnginePlugin")
+            ;
+          localFakeServer.pluginManager = pm;
+          pm.loadTemplateEngine('template');
+          expect(spy.called).to.be.true;
+          pm.loadTemplateEnginePlugin.restore();
         });
       });
     });

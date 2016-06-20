@@ -90,34 +90,12 @@ Server.prototype.configureApplication = function Server_configureApplication() {
     this.application.use(bodyParser.urlencoded({ extended: false }));
     this.application.use(bodyParser.json());
     this.application.use(express.static(this.staticsFolder));
-    let tagsValue = this.config.tags || {
-      blockStart: '{%',
-      blockEnd: '%}',
-      variableStart: '${',
-      variableEnd: '}',
-      commentStart: '<!--',
-      commentEnd: '-->'
-    };
-    this.pluginManager.loadFilterPlugins();
-    let njksEnv = nunjucks.configure(this.templatesFolders, {
-        autoescape: true,
-        express: this.application,
-        watch: true,
-        tags: tagsValue
-    });
-    this.addTemplateFilters(njksEnv, this.pluginManager.getLoadedFilters());
-    if(this.config.autoreload==='liveserver'){
+    this.pluginManager.loadTemplateEngines();
+    if(this.config.autoreload === 'liveserver'){
       this.application.use(clr());
     }
     this.pluginManager.loadPlugins();
     this.controllerManager.loadControllers();
-}
-
-Server.prototype.addTemplateFilters = function Server_addTemplateFilters(environment, filters) {
-  for(let key in filters){
-    Logger.log('info', '\t\t- '+key);
-    environment.addFilter(key, filters[key].bind(this.scope)() );
-  }
 }
 
 Server.prototype.isVerbose = function Server_isVerbose() {
