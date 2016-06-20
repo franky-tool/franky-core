@@ -247,6 +247,9 @@ PluginManager.prototype.loadPlugins = function PluginManager_loadPlugins() {
 PluginManager.prototype.loadTemplateEnginePlugin = function PluginManager_loadTemplateEnginePlugin(pluginMod, pluginName) {
   pluginMod.templateEngineProcessor.bind(this.serverInstance.getScope())(this.serverInstance);
   this.loadFilterPlugins();
+  this.serverInstance.addToScope("templateEngine", {
+    nameProprocessor: pluginMod.templateNameProprocessor||function(n){ return n; }
+  });
   pluginMod.loadTemplateEngineFilters.bind(this.serverInstance.getScope())(this.serverInstance);
 }
 
