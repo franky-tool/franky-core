@@ -6,5 +6,6 @@ _site
 .DS_Store
 test/data
 app/public
-
+jsconfig.json
+.vscode
 

@@ -10,3 +10,6 @@
 [submodule "app/controllers/datacontroller"]
 	path = app/controllers/datacontroller
 	url = https://github.com/franky-tool/franky-datacontroller
+[submodule "app/plugins/templateEngine"]
+	path = app/plugins/templateEngine
+	url = https://github.com/franky-tool/franky-nunjucks
