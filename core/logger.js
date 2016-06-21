@@ -46,7 +46,7 @@ function Logger (defaultlevel, filepath, io) {
     this.getBaseLogger = function  () {
       return {
         'info': function(message){
-          write(chalk.blue, message);
+          write(chalk.bgBlue, message);
         },
         'debug': function (message){
           write(chalk.yellow, message);
@@ -55,16 +55,16 @@ function Logger (defaultlevel, filepath, io) {
           write(chalk.green, message);
         },
         'warning': function (message){
-          write(chalk.orange, message);
+          write(chalk.magenta, message);
         },
         'notice': function (message){
           write(chalk.cyan, message);
         },
         'error': function (message){
-          write(chalk.magenta, message, true);
+          write(chalk.red, message, true);
         },
         'critical': function (message){
-          write(chalk.red, message, true);
+          write(chalk.bgRed, message, true);
         }
       };
     };

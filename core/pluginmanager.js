@@ -241,4 +241,47 @@ PluginManager.prototype.loadPlugins = function PluginManager_loadPlugins() {
   }
 }
 
+/**
+ * Load template engine routines
+ */
+PluginManager.prototype.loadTemplateEnginePlugin = function PluginManager_loadTemplateEnginePlugin(pluginMod, pluginName) {
+  pluginMod.templateEngineProcessor.bind(this.serverInstance.getScope())(this.serverInstance);
+  this.loadFilterPlugins();
+  this.serverInstance.addToScope("templateEngine", {
+    nameProprocessor: pluginMod.templateNameProprocessor||function(n){ return n; }
+  });
+  pluginMod.loadTemplateEngineFilters.bind(this.serverInstance.getScope())(this.serverInstance);
+}
+
+/**
+ * Load template engine acording the name.
+ */
+PluginManager.prototype.loadTemplateEngine = function PluginManager_loadTemplateEngine(pluginName) {
+  if (!pluginName) {
+    utils._err('templateEngine');
+  }
+  let modpath = [this.pluginsPath, pluginName].join(this.config.sep)
+    , pluginMod = utils.requireModule(modpath)
+    ;
+  if (pluginMod.type.toLowerCase()==='templateengine') {
+    Logger.log('info', "\t* Loading "+pluginName+" as "+pluginMod.type.toLowerCase());
+    this.loadTemplateEnginePlugin(pluginMod, pluginName);
+  }
+}
+
+/**
+ * Load template engines.
+ */
+PluginManager.prototype.loadTemplateEngines = function PluginManager_loadTemplateEngines() {
+  let modpath = [this.pluginsPath].join(this.config.sep)
+    , filesList = utils.ls(modpath);
+    ;
+  for(let p in filesList){
+    /* istanbul ignore else */
+    if(filesList[p].indexOf('.')!==0){
+      this.loadTemplateEngine(filesList[p]); 
+    }
+  }
+}
+
 module.exports = PluginManager;
