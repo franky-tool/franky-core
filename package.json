@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test",
+    "doc": "jsdoc core -d doc",
     "mocha": "mocha",
     "mocha:w": "mocha -w",
     "coverage": "rm -Rf coverage;istanbul cover ./node_modules/mocha/bin/_mocha test"

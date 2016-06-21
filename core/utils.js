@@ -1,3 +1,7 @@
+/**
+ * @module utils
+ */
+
 'use strict'
 
 let fs = require('fs')
