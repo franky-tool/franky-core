@@ -1,3 +1,6 @@
+/**
+ * @module logger
+ */
 
 var fs = require('fs')
   , utils = require('./utils.js')
@@ -11,6 +14,12 @@ var FILEPATH = "/tmp/franky.log"
     }
   ;
 
+/**
+ * @class Logger
+ * @param defaultlevel {string} Default logging level.
+ * @param filepath {filepath} output file path.
+ * @param io {Object} io streams.
+ */
 function Logger (defaultlevel, filepath, io) {
     var self = this;
     this.setIO = function Logger_setIO(io) {
@@ -27,47 +36,6 @@ function Logger (defaultlevel, filepath, io) {
       , verboseEnabled
       , defaultlevel = defaultlevel.toLowerCase()
       ;
-
-    function write(color, message, critical) {
-      /* istanbul ignore if */
-      if(!!message && message.constructor === {}.constructor){
-        message = "\n"+JSON.stringify(message, null, 2);
-      }
-      var out = ""+(new Date())+": "+message+"\n";
-      color = color || function(r){return r;};
-      outEl = self.io.stdout;
-      /* istanbul ignore else */
-      if (critical) {
-        outEl = self.io.stderr;
-      }
-      outEl.write(color(out));
-    }
-
-    this.getBaseLogger = function  () {
-      return {
-        'info': function(message){
-          write(chalk.bgBlue, message);
-        },
-        'debug': function (message){
-          write(chalk.yellow, message);
-        },
-        'success': function (message){
-          write(chalk.green, message);
-        },
-        'warning': function (message){
-          write(chalk.magenta, message);
-        },
-        'notice': function (message){
-          write(chalk.cyan, message);
-        },
-        'error': function (message){
-          write(chalk.red, message, true);
-        },
-        'critical': function (message){
-          write(chalk.bgRed, message, true);
-        }
-      };
-    };
 
     this.isVerboseEnabled = function() {
         return verboseEnabled;
@@ -111,6 +79,60 @@ function Logger (defaultlevel, filepath, io) {
     };
     this.log = this["defaultlevel"];
 }
+
+/**
+  * Write message in io.stdout/io.stderr with specified color.
+  * @param color {chalk.color} Message color.
+  * @param message {string} specified message.
+  * @param critical {boolean} Specify if is critical message. If is critical use io.stdout, otherwise use io.stderr.
+  */
+Logger.prototype.write = function Logger_write(color, message, critical) {
+  var self = this;
+  /* istanbul ignore if */
+  if(!!message && message.constructor === {}.constructor){
+    message = "\n"+JSON.stringify(message, null, 2);
+  }
+  var out = ""+(new Date())+": "+message+"\n";
+  color = color || function(r){return r;};
+  outEl = self.io.stdout;
+  /* istanbul ignore else */
+  if (critical) {
+    outEl = self.io.stderr;
+  }
+  outEl.write(color(out));
+}
+
+/**
+  * Return the base logger object.
+  * @returns {Object} An object with function for every possible log type.
+  */
+Logger.prototype.getBaseLogger = function Logger_getBaseLogger() {
+  var self = this;
+  return {
+    'info': function(message){
+      self.write(chalk.bgBlue, message);
+    },
+    'debug': function (message){
+      self.write(chalk.yellow, message);
+    },
+    'success': function (message){
+      self.write(chalk.green, message);
+    },
+    'warning': function (message){
+      self.write(chalk.magenta, message);
+    },
+    'notice': function (message){
+      self.write(chalk.cyan, message);
+    },
+    'error': function (message){
+      self.write(chalk.red, message, true);
+    },
+    'critical': function (message){
+      self.write(chalk.bgRed, message, true);
+    }
+  };
+};
+
 
 Logger.logger = new Logger("info");
 
