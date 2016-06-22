@@ -50,6 +50,7 @@ function GulpRoutines(basePath, config, debug) {
   exitOnSignal('uncaughtException');
   process.stdin.resume();
 
+  /* istanbul ignore next */
   function exitOnSignal(signal) {
     process.on(signal, function(err) {
       console.log('\nCaught ' + signal + ', exiting...');
@@ -62,6 +63,7 @@ function GulpRoutines(basePath, config, debug) {
     });
   }
 
+  /* istanbul ignore next */
   function printError(err, task){
     task = (!!task)? task+' ': '';
     console.error('Error on '+task+'gulp task:', err.message);
@@ -73,6 +75,7 @@ function GulpRoutines(basePath, config, debug) {
   /**
    * Contains all gulp tasks.
    */
+  /* istanbul ignore next */
   this.routines = {
     'es6': function GulpRoutines_es6() {
       let pipeInst = gulp.src(jsSourcePath)
