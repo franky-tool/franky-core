@@ -3,11 +3,11 @@ node_js:
   - "6"
   - "5"
   - "4"
-env:
-  - CXX=g++-4.8
-install:
+branches:
+  only:
+    master
+before_script:
+  - npm install -g gulp
   - npm install
-addons:
-  apt:
-    packages:
-      - g++-4.8
+script:
+  - npm run test
