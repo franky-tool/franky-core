@@ -3,11 +3,13 @@ node_js:
   - "6"
   - "5"
   - "4"
+sudo: required
 branches:
   only:
     master
 before_script:
   - npm install -g gulp
   - npm install
+  - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 script:
   - npm run test
