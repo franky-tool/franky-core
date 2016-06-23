@@ -1,8 +1,13 @@
+/**
+ * @module gulproutines
+ */
+
 'use strict'
 
 let fs = require('fs')
   , spawn = require('child_process').spawn
   , utils = require('./utils.js')
+  , launchProcess = utils.launchProcess
   , gulp = utils.requireModule('gulp')
   , less = utils.requireModule('gulp-less')
   , sass = utils.requireModule('gulp-sass')
@@ -16,35 +21,12 @@ let fs = require('fs')
   , browserSync = require('browser-sync').create()
   ;
   
-function launchProcess(command, args, stdout, stderr, onexit) {
-  if(!command){
-    return;
-  }
-  if(!args){
-    args = [];
-  }
-  if(!stdout){
-    stdout = function(data){
-      process.stdout.write(''+data);
-    };
-  }
-  if(!stderr){
-    stderr = function(data){
-      process.stderr.write(''+data);
-    };
-  }
-  if(!onexit){
-    onexit = function(code){
-      console.log('child process exited with code '+code);
-    };
-  }
-  let sp = spawn(command, args);
-  sp.stdout.on('data', stdout);
-  sp.stderr.on('data', stderr);
-  sp.on('close', onexit);
-  return sp;
-}
-  
+/**
+ * @class GulpRoutines
+ * @param {string} basePath root path to execute tasks
+ * @param {Object} config Configuration to execute tasks
+ * @param {boolean} debug Enable or disable debug output
+ */
 function GulpRoutines(basePath, config, debug) {
   let ignored = '**/'+config.ignore_prefix+'*.*'
     , src = config.sources
@@ -68,6 +50,7 @@ function GulpRoutines(basePath, config, debug) {
   exitOnSignal('uncaughtException');
   process.stdin.resume();
 
+  /* istanbul ignore next */
   function exitOnSignal(signal) {
     process.on(signal, function(err) {
       console.log('\nCaught ' + signal + ', exiting...');
@@ -80,6 +63,7 @@ function GulpRoutines(basePath, config, debug) {
     });
   }
 
+  /* istanbul ignore next */
   function printError(err, task){
     task = (!!task)? task+' ': '';
     console.error('Error on '+task+'gulp task:', err.message);
@@ -88,6 +72,10 @@ function GulpRoutines(basePath, config, debug) {
     }
   }
 
+  /**
+   * Contains all gulp tasks.
+   */
+  /* istanbul ignore next */
   this.routines = {
     'es6': function GulpRoutines_es6() {
       let pipeInst = gulp.src(jsSourcePath)
@@ -263,6 +251,8 @@ function GulpRoutines(basePath, config, debug) {
 
 /**
  * Return a specified routine
+ * @param name {string} Name of routine.
+ * @returns {function|Array}
  */
 GulpRoutines.prototype.getRoutine = function GulpRoutines_getRoutine(name) {
   return this.routines[name];
@@ -270,6 +260,7 @@ GulpRoutines.prototype.getRoutine = function GulpRoutines_getRoutine(name) {
 
 /**
  * Return the names of stored routines.
+ * @returns {string[]} Return the key values from member routines.
  */
 GulpRoutines.prototype.getRoutineNames = function GulpRoutines_getRoutinenames() {
   return Object.keys(this.routines);

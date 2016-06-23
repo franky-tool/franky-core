@@ -324,6 +324,13 @@ describe('As a developer I want to extend my application with a plugins.\n', fun
       describe('When the developer create an instance and call loadTemplateEngines method', function () {
         it('Then call loadTemplateEngine method', function () {
           let localFakeServer = JSON.parse(JSON.stringify(fakeServer));
+          let scope = {};
+          localFakeServer.addToScope = (a, b)=>{
+            scope[a] = b;
+          };
+          localFakeServer.getScope = ()=>{
+            return scope;
+          };
           localFakeServer.config = {
             plugins: 'plugins',
             sep: '/',
@@ -354,6 +361,13 @@ describe('As a developer I want to extend my application with a plugins.\n', fun
       describe('When the developer create an instance and call loadTemplateEngine method', function () {
         it('Then call loadTemplateEnginePlugin method', function () {
           let localFakeServer = JSON.parse(JSON.stringify(fakeServer));
+          let scope = {};
+          localFakeServer.addToScope = (a, b)=>{
+            scope[a] = b;
+          };
+          localFakeServer.getScope = ()=>{
+            return scope;
+          };
           localFakeServer.config = {
             plugins: 'plugins',
             sep: '/',

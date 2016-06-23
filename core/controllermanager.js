@@ -1,9 +1,19 @@
+/**
+ * @module controllermanager
+ */
+
 'use strict'
 
 let utils = require('./utils.js')
   , Logger = require('./logger.js')
   ;
 
+/**
+ * @class
+ * @constructor
+ * @param Server {server} injected server instance.
+ * @param String {basePath} root path for search all controllers.
+ */
 function ControllerManager(server, basePath){
   if (!server) {
     utils._err('server');
@@ -14,12 +24,15 @@ function ControllerManager(server, basePath){
   if (!server.getApplication()) {
     utils._err('server', 'The provided server is not a valid server instance.');
   }
+  /** Injected server instance. */
   this.server = server;
+  /** root path for search all controllers. */
   this.basePath = basePath;
 }
 
 /**
  * This method load a controller file from specified path.
+ * @param String {modulePath} path of module.
  */
 ControllerManager.prototype.loadControllerModule = function ControllerManager_loadControllerModule(modulePath){
   let returnValue = [];
@@ -52,6 +65,7 @@ ControllerManager.prototype.loadControllers = function ControllerManager_loadCon
 
 /**
  * This method inject a group of paths and actions into an express aplication instance. 
+ * @param Object {moduleContent} path of module.
  */
 ControllerManager.prototype.injectModule = function ControllerManager_injectModule(moduleContent) {
   for(let path in moduleContent){
