@@ -47,22 +47,18 @@ describe('As a developer I want to instantiate an intermediary to save informati
         }
       , dbfolderpath = __dirname+config.sep+config.database.name
       ;
-    before(function(){
+    beforeEach(function(){
       try {
         rmdir(dbfolderpath);
       } catch (error) {}
       try {
         fs.mkdirSync(dbfolderpath);
-        fs.writeFile(dbfolderpath+"/"+collection+".json", JSON.stringify(usersData), function(err) {
-            if(err) {
-                return console.log(err);
-            }
-        });
+        fs.writeFileSync(dbfolderpath+"/"+collection+".json", JSON.stringify(usersData));
       } catch (error) {
         console.error("Error creating file.");
       }
     });
-    after(function(){
+    afterEach(function(){
       try {
         rmdir(dbfolderpath);
       } catch (error) {}
@@ -188,7 +184,7 @@ describe('As a developer I want to instantiate an intermediary to save informati
     describe('When the developer use a method remove from storage instance', function () {
       it('Then will remove all saved information.', function (done) {
         storage.remove(collection, function storage_remove_callback(data) {
-          expect(data.length).to.be.equal(3);
+          expect(data.length).to.be.equal(2);
           done();
         });
       });

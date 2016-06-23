@@ -1,10 +1,16 @@
+/**
+ * @module argsparser
+ */
+
 'use strict'
 
 let utils = require('./utils.js')
   , program = utils.requireModule('commander')
   ;
 
+
 /**
+ * @class
  * Parse the arguments passed from command line.
  */
 function ArgsParser() {

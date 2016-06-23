@@ -1,3 +1,7 @@
+/**
+ * @module pluginmanager
+ */
+
 'use strict'
 
 let utils = require('./utils.js')
@@ -5,7 +9,10 @@ let utils = require('./utils.js')
   ;
 
 /**
- * Module to manage the plugins of the system.
+ * @class
+ * Class to manage system plugins.
+ * @param basePath {string} root path for search all controllers.
+ * @param serverInst {Server} injected server instance.
  */
 function PluginManager(basePath, serverInstance){
   if (!basePath) {
@@ -25,6 +32,7 @@ function PluginManager(basePath, serverInstance){
 
 /**
  * Use the loaded plugin of middleware type.
+ * @param pluginMod {Object} Plugin module exported as a Object.
  */
 PluginManager.prototype.loadMiddlewarePlugin = function PluginManager_loadMiddlewarePlugin(pluginMod) {
   if (pluginMod.type.toLowerCase()!=='middleware') {
@@ -42,6 +50,8 @@ PluginManager.prototype.loadMiddlewarePlugin = function PluginManager_loadMiddle
 
 /**
  * Process all command plugins.
+ * @param argsparser {ArgsParser} Arguments parser instance.
+ * @returns {boolean} True if all plugins are loaded, otherwise false True if all plugins are loaded, otherwise false..
  */
 PluginManager.prototype.processAll = function PluginManager_processAll(argsparser) {
   let retValue = false;
@@ -78,6 +88,7 @@ PluginManager.prototype.processAll = function PluginManager_processAll(argsparse
 
 /**
  * Return loaded command plugins
+ * @param pluginMod {Object} Plugin module object.
  */
 PluginManager.prototype.getLoadedCommands = function PluginManager_getLoadedCommands(pluginMod) {
   return this.commands;
@@ -85,15 +96,16 @@ PluginManager.prototype.getLoadedCommands = function PluginManager_getLoadedComm
 
 /**
  * Return loaded filter plugins
+ * @returns {Array} filters list.
  */
-PluginManager.prototype.getLoadedFilters = function PluginManager_getLoadedFilters(pluginMod) {
+PluginManager.prototype.getLoadedFilters = function PluginManager_getLoadedFilters() {
   return this.filters;
 }
 
 /**
  * Load plugin that provide an extra filters for templates.
  */
-PluginManager.prototype.loadFilterPlugins = function PluginManager_loadFilterPlugins(pluginMod) {
+PluginManager.prototype.loadFilterPlugins = function PluginManager_loadFilterPlugins() {
   let modpath = [this.pluginsPath].join(this.config.sep)
     , filesList = utils.ls(modpath);
     ;
@@ -121,6 +133,7 @@ PluginManager.prototype.loadFilter = function PluginManager_loadFilter(pluginNam
 
 /**
  * Load plugin that provide a template filter functionality.
+ * @param pluginMod {Object} Plugin module object.
  */
 PluginManager.prototype.loadFilterPlugin = function PluginManager_loadFilterPlugin(pluginMod) {
   /* istanbul ignore if */
@@ -136,6 +149,9 @@ PluginManager.prototype.loadFilterPlugin = function PluginManager_loadFilterPlug
   }
 } 
 
+/**
+ * Load single command
+ */
 PluginManager.prototype.loadSingleCommand = function PluginManager_loadSingleCommand(command) {
   let cmd = []
     ;
@@ -163,6 +179,8 @@ PluginManager.prototype.loadSingleCommand = function PluginManager_loadSingleCom
 
 /**
  * Load plugin that provide a command line functionality.
+ * @param pluginMod {Object} Plugin module object.
+ * @param pluginName {string} Plugin name.
  */
 PluginManager.prototype.loadCommandlinePlugin = function PluginManager_loadCommandlinePlugin(pluginMod, pluginName) {
   /* istanbul ignore if */
@@ -183,6 +201,7 @@ PluginManager.prototype.loadCommandlinePlugin = function PluginManager_loadComma
 
 /**
  * Load a command plugin acording the name.
+ * @param pluginName {string} Plugin name.
  */
 PluginManager.prototype.loadCommand = function PluginManager_loadCommand(pluginName) {
   /* istanbul ignore if */
@@ -200,6 +219,7 @@ PluginManager.prototype.loadCommand = function PluginManager_loadCommand(pluginN
 
 /**
  * Load a plugin acording the name.
+ * @param pluginName {string} Plugin name.
  */
 PluginManager.prototype.loadPlugin = function PluginManager_loadPlugin(pluginName) {
   if (!pluginName) {
@@ -243,6 +263,8 @@ PluginManager.prototype.loadPlugins = function PluginManager_loadPlugins() {
 
 /**
  * Load template engine routines
+ * @param pluginMod {Object} Plugin module object.
+ * @param pluginName {string} Plugin name.
  */
 PluginManager.prototype.loadTemplateEnginePlugin = function PluginManager_loadTemplateEnginePlugin(pluginMod, pluginName) {
   pluginMod.templateEngineProcessor.bind(this.serverInstance.getScope())(this.serverInstance);
@@ -255,6 +277,7 @@ PluginManager.prototype.loadTemplateEnginePlugin = function PluginManager_loadTe
 
 /**
  * Load template engine acording the name.
+ * @param pluginName {string} Plugin name.
  */
 PluginManager.prototype.loadTemplateEngine = function PluginManager_loadTemplateEngine(pluginName) {
   if (!pluginName) {

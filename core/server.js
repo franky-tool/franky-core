@@ -1,3 +1,7 @@
+/**
+ * @module server
+ */
+
 'use strict'
 
 let Logger = require('./logger')
@@ -12,6 +16,12 @@ let Logger = require('./logger')
   , clr = utils.requireModule('connect-livereload')
   ;
 
+/**
+ * @class
+ * @param basePath {string} root path for search all controllers.
+ * @param verbose {boolean} Set verbose outputs enabled.
+ * @param customConfig {Object} Custom configuration.
+ */
 function Server(basePath, verbose, customConfig) {
   /* istanbul ignore if */
   if(!basePath){
@@ -98,26 +108,44 @@ Server.prototype.configureApplication = function Server_configureApplication() {
     this.controllerManager.loadControllers();
 }
 
+/**
+ * @returns {boolean} True if verbosity is enabled, otherwise false.
+ */
 Server.prototype.isVerbose = function Server_isVerbose() {
   return this.verbose;
 }
 
+/**
+ * Set server configuration.
+ * @param config {Object} New configuration.
+ */
 Server.prototype.setConfiguration = function Server_setConfiguration(config) {
   this.config = config;
 }
 
+/**
+ * @returns {Object} A configuration object.
+ */
 Server.prototype.getConfiguration = function Server_getConfiguration() {
   return this.config;
 }
 
+/**
+ * @returns {Express.Application} the saved express aplication instance.
+ */
 Server.prototype.getApplication = function Server_getApplication() {
   return this.application;
 }
 
+/**
+ * @returns {string} The stored root path.
+ */
 Server.prototype.getBasePath = function Server_getBasePath() {
   return this.basePath;
 }
-
+/**
+ * Method executed where server is ready.
+ */
 Server.prototype.onListen = function Server_onListen() {
   let PORT;
   /* istanbul ignore if */
@@ -129,7 +157,10 @@ Server.prototype.onListen = function Server_onListen() {
   Logger.log('success', 'Listening' + PORT);
   return true;    
 }
-
+/**
+ * Starts the web server.
+ * @returns {http.Server} The server instance created.
+ */
 Server.prototype.start = function Server_start() {
   if (!this.run) {
       return;
@@ -141,20 +172,24 @@ Server.prototype.start = function Server_start() {
 
 /**
  * Get the scope of actions loaded from controllers.
+ * @returns {Object} The aplication sope object.
  */
 Server.prototype.getScope = function Server_getScope() {
   return this.scope;
 }
 
 /**
- * Set the scope of actions loaded from controllers.
+ * Set the plugins' methods scope.
+ * @param scope {Object} new application scope.
  */
 Server.prototype.setScope = function Server_setScope(scope) {
     this.scope = scope;
 }
 
 /**
- * Set the scope of actions loaded from controllers.
+ * Add new element to the plugins' methods scope.
+ * @param key {string} Element name in scope
+ * @param value {Object} Element value
  */
 Server.prototype.addToScope = function Server_addToScope(key, value) {
     this.scope[key]=value;
