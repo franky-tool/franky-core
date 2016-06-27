@@ -7,6 +7,7 @@
 let fs = require('fs')
   , path = require('path')
   , mkdirp = requireModule('mkdirp')
+  , spawn = require('child_process').spawn
   ;
 
 /**
