@@ -81,11 +81,11 @@ describe('As a developer I want to instantiate a server so that dispatch the bro
       });
       describe('When the server is initialized', function () {
         it('Then call the onListen method.', function () {
-          server.setConfiguration({
-            config: {
+          server.setConfiguration(
+            {
               port: 3000
             }
-          });
+          );
           server.start();
         });
       });
